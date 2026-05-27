@@ -1,0 +1,1535 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mon Programme Bien-être — FODMAPs · SCI/MICI · Sport · Méditation</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #1C1409;
+  --paper: #F8F4EE;
+  --paper2: #F0EAE0;
+  --paper3: #E8DFD2;
+  --line: #DDD3C2;
+  --muted: #9A8A74;
+  --phase-evict: #3D6B52;
+  --phase-evict-l: #D0E8DC;
+  --phase-evict-mid: #5A9478;
+  --w1: #3B6E5C;
+  --w1l: #D4EAE1;
+  --w2: #7A4F28;
+  --w2l: #EDD9C0;
+  --w3: #52398A;
+  --w3l: #DDD5F0;
+  --w4: #A84E0A;
+  --w4l: #F5DCC8;
+  --ok: #2D7A52;
+  --warn: #B87A00;
+  --ko: #A02828;
+  --gold: #C9A050;
+  --sport: #2B5FA0;
+  --sport-l: #D0DEF5;
+  --med: #7048A0;
+  --med-l: #E8DCFA;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Outfit', sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+  min-height: 100vh;
+  font-size: 15px;
+}
+
+/* ══ SPLASH / HOME ══ */
+#splash {
+  min-height: 100vh;
+  background: var(--ink);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  position: relative;
+  overflow: hidden;
+}
+#splash::before {
+  content: '';
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 70% 60% at 15% 40%, rgba(61,107,82,0.35) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 50% at 80% 20%, rgba(82,57,138,0.2) 0%, transparent 55%),
+    radial-gradient(ellipse 40% 40% at 60% 85%, rgba(168,78,10,0.18) 0%, transparent 50%);
+}
+.splash-inner { position: relative; text-align: center; max-width: 560px; }
+.splash-badge {
+  display: inline-block;
+  font-size: 0.68rem; letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--muted); border: 1px solid #3A3025;
+  padding: 0.3rem 1rem; border-radius: 2rem; margin-bottom: 2rem;
+}
+#splash h1 {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 300; font-size: clamp(2.2rem, 6vw, 3.8rem);
+  color: #F8F4EE; line-height: 1.1; margin-bottom: 1rem;
+}
+#splash h1 em { font-style: italic; color: #9DCFB8; }
+#splash p { font-size: 0.88rem; color: var(--muted); line-height: 1.75; margin-bottom: 2.5rem; }
+#splash p strong { color: #E0C898; font-weight: 500; }
+
+.phase-cards {
+  display: grid; grid-template-columns: 1fr 1fr 1fr;
+  gap: 1rem; margin-bottom: 2.5rem; width: 100%;
+}
+.phase-card {
+  padding: 1.25rem; border-radius: 1rem; cursor: pointer;
+  border: 1.5px solid transparent; text-align: left;
+  transition: all 0.2s;
+}
+.phase-card.evict { background: rgba(61,107,82,0.15); border-color: rgba(61,107,82,0.4); }
+.phase-card.reintr { background: rgba(82,57,138,0.12); border-color: rgba(82,57,138,0.35); }
+.phase-card:hover { transform: translateY(-2px); filter: brightness(1.15); }
+.phase-card .pc-icon { font-size: 1.8rem; margin-bottom: 0.5rem; }
+.phase-card .pc-label { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--muted); margin-bottom: 0.25rem; }
+.phase-card .pc-title { font-family: 'Cormorant Garamond', serif; font-size: 1.1rem; color: #F8F4EE; margin-bottom: 0.35rem; }
+.phase-card .pc-sub { font-size: 0.75rem; color: var(--muted); line-height: 1.5; }
+
+.btn-primary {
+  font-family: 'Outfit', sans-serif; font-size: 0.82rem; font-weight: 600;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  padding: 0.75rem 2rem; border-radius: 2rem;
+  border: none; cursor: pointer; transition: all 0.2s;
+}
+.btn-evict { background: var(--phase-evict); color: white; }
+.btn-evict:hover { background: var(--phase-evict-mid); }
+.btn-reintr { background: var(--w3); color: white; }
+.btn-reintr:hover { background: #6A4AAA; }
+
+/* ══ APP SHELL ══ */
+#app { display: none; flex-direction: column; min-height: 100vh; }
+
+/* TOP BAR */
+.topbar {
+  position: sticky; top: 0; z-index: 200;
+  background: var(--ink); padding: 0.7rem 1rem;
+  display: flex; align-items: center; gap: 0.75rem;
+  border-bottom: 1px solid #2A2015;
+}
+.topbar-home {
+  font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--muted); cursor: pointer; padding: 0.3rem 0.7rem;
+  border: 1px solid #3A3025; border-radius: 1.5rem;
+  transition: all 0.15s; flex-shrink: 0;
+}
+.topbar-home:hover { color: var(--paper); border-color: var(--muted); }
+.topbar-title {
+  font-family: 'Cormorant Garamond', serif; font-size: 1.05rem;
+  color: var(--paper); flex: 1; text-align: center;
+}
+.topbar-title em { font-style: italic; }
+.topbar-phase-dot {
+  width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+}
+
+/* PHASE TABS */
+.phase-tabs {
+  display: flex; background: var(--paper2);
+  border-bottom: 2px solid var(--line);
+}
+.phase-tab {
+  flex: 1; padding: 0.85rem 0.5rem; border: none; background: transparent;
+  font-family: 'Outfit', sans-serif; font-size: 0.75rem; font-weight: 500;
+  letter-spacing: 0.05em; cursor: pointer; transition: all 0.18s;
+  color: var(--muted); border-bottom: 3px solid transparent;
+  display: flex; flex-direction: column; align-items: center; gap: 0.15rem;
+}
+.phase-tab .pt-icon { font-size: 1rem; }
+.phase-tab .pt-name { font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.08em; }
+.phase-tab.evict-tab.active { color: var(--phase-evict); border-bottom-color: var(--phase-evict); background: var(--phase-evict-l); }
+.phase-tab.w1-tab.active { color: var(--w1); border-bottom-color: var(--w1); background: var(--w1l); }
+.phase-tab.w2-tab.active { color: var(--w2); border-bottom-color: var(--w2); background: var(--w2l); }
+.phase-tab.w3-tab.active { color: var(--w3); border-bottom-color: var(--w3); background: var(--w3l); }
+.phase-tab.w4-tab.active { color: var(--w4); border-bottom-color: var(--w4); background: var(--w4l); }
+.phase-tab:hover:not(.active) { background: var(--paper3); color: var(--ink); }
+
+/* DAY PILLS */
+.days-bar {
+  padding: 0.85rem 1rem 0.6rem; background: var(--paper2);
+  display: flex; gap: 0.35rem; flex-wrap: wrap;
+  border-bottom: 1px solid var(--line);
+}
+.day-pill {
+  font-size: 0.72rem; font-weight: 500; padding: 0.3rem 0.7rem;
+  border-radius: 1.5rem; border: 1.5px solid var(--line);
+  background: white; cursor: pointer; transition: all 0.15s;
+  color: var(--muted); white-space: nowrap;
+}
+.day-pill:hover { border-color: var(--muted); color: var(--ink); }
+.day-pill.active.evict-tab { background: var(--phase-evict); color: white; border-color: var(--phase-evict); }
+.day-pill.active.w1-tab { background: var(--w1); color: white; border-color: var(--w1); }
+.day-pill.active.w2-tab { background: var(--w2); color: white; border-color: var(--w2); }
+.day-pill.active.w3-tab { background: var(--w3); color: white; border-color: var(--w3); }
+.day-pill.active.w4-tab { background: var(--w4); color: white; border-color: var(--w4); }
+
+/* CONTENT */
+.content { max-width: 740px; margin: 0 auto; padding: 1.75rem 1rem 5rem; }
+
+/* PHASE INTRO BAND */
+.phase-band {
+  display: flex; align-items: flex-start; gap: 1rem;
+  padding: 1.25rem 1.25rem; border-radius: 0.875rem;
+  margin-bottom: 1.5rem; border-left: 4px solid;
+}
+.phase-band.evict-tab { background: var(--phase-evict-l); border-color: var(--phase-evict); }
+.phase-band.w1-tab { background: var(--w1l); border-color: var(--w1); }
+.phase-band.w2-tab { background: var(--w2l); border-color: var(--w2); }
+.phase-band.w3-tab { background: var(--w3l); border-color: var(--w3); }
+.phase-band.w4-tab { background: var(--w4l); border-color: var(--w4); }
+.pb-icon { font-size: 2rem; flex-shrink: 0; }
+.pb-body .pb-sub { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--muted); margin-bottom: 0.2rem; }
+.pb-body h2 { font-family: 'Cormorant Garamond', serif; font-size: 1.3rem; font-weight: 600; margin-bottom: 0.3rem; }
+.pb-body p { font-size: 0.8rem; line-height: 1.65; color: #4A3C2C; }
+.food-chips { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-top: 0.6rem; }
+.food-chip {
+  font-size: 0.7rem; padding: 0.18rem 0.55rem; border-radius: 1rem;
+  border: 1px solid currentColor; font-weight: 500;
+}
+.evict-tab .food-chip { color: var(--phase-evict); }
+.w1-tab .food-chip { color: var(--w1); }
+.w2-tab .food-chip { color: var(--w2); }
+.w3-tab .food-chip { color: var(--w3); }
+.w4-tab .food-chip { color: var(--w4); }
+
+/* DAY HEADER */
+.day-row {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 1rem;
+}
+.day-title { font-family: 'Cormorant Garamond', serif; font-size: 1.4rem; }
+.badge {
+  font-size: 0.68rem; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.08em; padding: 0.28rem 0.75rem; border-radius: 2rem;
+}
+.badge-base { background: #D8EFE4; color: #1E5C3A; }
+.badge-test { background: #FFF0C0; color: #7A5500; }
+.badge-pause { background: #D8EEF5; color: #0A4A60; }
+.badge-observe { background: #FCE0E0; color: #7A1C1C; }
+
+/* ALERT BOX */
+.alert-box {
+  border-radius: 0.75rem; padding: 0.85rem 1.1rem;
+  margin-bottom: 1.25rem; font-size: 0.82rem; line-height: 1.65;
+}
+.alert-box.test { background: #FFFBEC; border: 1.5px solid #F5D060; color: #4A3200; }
+.alert-box.test strong { color: #8A5E00; }
+.alert-box.pause { background: #EAF6FB; border: 1.5px solid #80D0EC; color: #093C50; }
+.alert-box.pause strong { color: #0A6688; }
+.alert-box.observe { background: #FEF0F0; border: 1.5px solid #F0A0A0; color: #5A1818; }
+.alert-box.observe strong { color: #8A2020; }
+.alert-box.base { background: var(--phase-evict-l); border: 1.5px solid var(--phase-evict-mid); color: #1A3D28; }
+.alert-box.base strong { color: var(--phase-evict); }
+
+/* MEALS */
+.meals-grid { display: grid; gap: 0.8rem; margin-bottom: 1.25rem; }
+.meal-row {
+  display: grid; grid-template-columns: 72px 1fr;
+  background: white; border: 1px solid var(--line);
+  border-radius: 0.75rem; overflow: hidden;
+  transition: box-shadow 0.18s;
+}
+.meal-row:hover { box-shadow: 0 3px 16px rgba(28,20,9,0.07); }
+.meal-side {
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; gap: 0.2rem;
+  padding: 0.75rem 0.4rem; border-right: 1px solid var(--line);
+  background: var(--paper2);
+}
+.meal-side .ico { font-size: 1.1rem; }
+.meal-side .lbl {
+  font-size: 0.58rem; text-transform: uppercase; letter-spacing: 0.08em;
+  color: var(--muted); font-weight: 600; text-align: center;
+}
+.meal-body { padding: 0.8rem 1rem; }
+.meal-name {
+  font-family: 'Cormorant Garamond', serif; font-size: 1rem;
+  font-weight: 600; margin-bottom: 0.35rem; color: var(--ink);
+}
+.meal-items { list-style: none; font-size: 0.79rem; color: var(--muted); line-height: 1.65; }
+.meal-items li { position: relative; padding-left: 0.85rem; }
+.meal-items li::before { content: '·'; position: absolute; left: 0; font-size: 1.1rem; line-height: 1.15; color: var(--line); }
+.ht { font-weight: 600; padding: 0.08rem 0.3rem; border-radius: 0.25rem; font-size: 0.77rem; }
+.ht-evict { color: var(--phase-evict); background: var(--phase-evict-l); }
+.ht-w1 { color: var(--w1); background: var(--w1l); }
+.ht-w2 { color: var(--w2); background: var(--w2l); }
+.ht-w3 { color: var(--w3); background: var(--w3l); }
+.ht-w4 { color: var(--w4); background: var(--w4l); }
+
+/* TIP BOX */
+.tip-box {
+  background: linear-gradient(135deg, #EFF8F3 0%, #F8F4EE 100%);
+  border: 1px solid #B8D8C8; border-radius: 0.75rem;
+  padding: 0.85rem 1.1rem; font-size: 0.8rem; color: #2A4A38; line-height: 1.65;
+  margin-bottom: 1rem;
+}
+.tip-box strong { color: var(--phase-evict); }
+
+/* TOLERANCE TRACKER */
+.tol-box { border: 1.5px solid var(--line); border-radius: 0.75rem; overflow: hidden; margin-top: 0.75rem; }
+.tol-head {
+  background: var(--paper2); padding: 0.6rem 1rem;
+  font-size: 0.72rem; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.1em; color: var(--muted);
+  border-bottom: 1px solid var(--line);
+}
+.tol-body { padding: 1rem; }
+.tol-q { font-size: 0.82rem; font-weight: 500; margin-bottom: 0.45rem; color: var(--ink); }
+.tol-opts { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 0.8rem; }
+.tol-btn {
+  font-size: 0.73rem; font-family: 'Outfit', sans-serif;
+  padding: 0.32rem 0.8rem; border-radius: 2rem;
+  border: 1.5px solid var(--line); background: white;
+  cursor: pointer; transition: all 0.15s; color: var(--muted);
+}
+.tol-btn:hover { border-color: var(--muted); color: var(--ink); }
+.sel-ok { background: #D0EAD8; color: var(--ok); border-color: var(--ok); }
+.sel-warn { background: #FFF3C0; color: var(--warn); border-color: var(--warn); }
+.sel-ko { background: #FAD8D8; color: var(--ko); border-color: var(--ko); }
+.note-area {
+  width: 100%; font-family: 'Outfit', sans-serif; font-size: 0.78rem;
+  border: 1px solid var(--line); border-radius: 0.5rem;
+  padding: 0.5rem 0.75rem; resize: none; min-height: 52px;
+  color: var(--ink); background: var(--paper); outline: none; margin-top: 0.35rem;
+}
+.note-area:focus { border-color: var(--muted); }
+.note-area::placeholder { color: var(--line); }
+.save-row { display: flex; align-items: center; gap: 0.75rem; margin-top: 0.5rem; }
+.save-btn {
+  font-family: 'Outfit', sans-serif; font-size: 0.73rem; font-weight: 600;
+  padding: 0.38rem 1rem; border-radius: 2rem;
+  border: 1.5px solid var(--ink); background: var(--ink);
+  color: var(--paper); cursor: pointer; transition: all 0.15s;
+}
+.save-btn:hover { background: #3A3020; }
+.saved-flash { font-size: 0.72rem; color: var(--ok); opacity: 0; transition: opacity 0.3s; }
+.saved-flash.show { opacity: 1; }
+
+/* BILAN TABLE */
+.bilan-wrap { margin-top: 1.5rem; }
+.bilan-title {
+  font-family: 'Cormorant Garamond', serif; font-size: 1.2rem;
+  margin-bottom: 0.85rem; display: flex; align-items: center; gap: 0.5rem;
+}
+.bilan-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0.6rem 1rem; background: white;
+  border: 1px solid var(--line); border-radius: 0.5rem; margin-bottom: 0.4rem;
+  font-size: 0.82rem;
+}
+.bilan-food { font-weight: 500; }
+.bilan-tag {
+  font-size: 0.7rem; font-weight: 600; padding: 0.18rem 0.55rem; border-radius: 1rem;
+}
+.bilan-ok { background: var(--w1l); color: var(--ok); }
+.bilan-warn { background: #FFF3C0; color: var(--warn); }
+.bilan-ko { background: #FAD8D8; color: var(--ko); }
+.bilan-pending { background: var(--paper2); color: var(--muted); }
+
+/* PROGRESS BAR */
+.progress-bar-wrap { padding: 0.6rem 1rem 0; background: var(--paper2); border-bottom: 1px solid var(--line); }
+.progress-label { font-size: 0.68rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.3rem; }
+.progress-track { height: 4px; background: var(--line); border-radius: 2px; overflow: hidden; }
+.progress-fill { height: 100%; border-radius: 2px; transition: width 0.4s ease; }
+.pf-evict { background: var(--phase-evict); }
+.pf-reintr { background: linear-gradient(90deg, var(--w1), var(--w2), var(--w3), var(--w4)); }
+
+/* ══ INTRO EVICTION (day 0 banner) ══ */
+.intro-evict {
+  background: var(--ink); color: var(--paper); border-radius: 0.875rem;
+  padding: 1.25rem 1.5rem; margin-bottom: 1.5rem; font-size: 0.82rem; line-height: 1.75;
+}
+.intro-evict strong { color: #9DCFB8; }
+.intro-evict ul { padding-left: 1rem; margin-top: 0.5rem; }
+.intro-evict ul li { margin-bottom: 0.25rem; }
+
+/* Responsive */
+@media (max-width: 520px) {
+  .phase-cards { grid-template-columns: 1fr; }
+  .phase-tabs { overflow-x: auto; scrollbar-width: none; }
+  .phase-tab { min-width: 80px; }
+  .meal-row { grid-template-columns: 56px 1fr; }
+  .content { padding: 1.25rem 0.75rem 5rem; }
+}
+
+/* ══ SPORT MODULE ══ */
+--sport: #2B5FA0;
+--sport-l: #D0DEF5;
+--med: #7048A0;
+--med-l: #E8DCFA;
+
+.sport-section { display:none; }
+.sport-section.active { display:block; }
+
+/* Splash sport card */
+.phase-card.sport { background: rgba(43,95,160,0.15); border-color: rgba(43,95,160,0.4); }
+.phase-card.med { background: rgba(112,72,160,0.12); border-color: rgba(112,72,160,0.35); }
+
+/* Sport tab */
+.phase-tab.sport-tab.active { color:#2B5FA0; border-bottom-color:#2B5FA0; background:#D0DEF5; }
+.phase-tab.med-tab.active { color:#7048A0; border-bottom-color:#7048A0; background:#E8DCFA; }
+.day-pill.active.sport-tab { background:#2B5FA0; color:white; border-color:#2B5FA0; }
+.day-pill.active.med-tab { background:#7048A0; color:white; border-color:#7048A0; }
+.pf-sport { background: linear-gradient(90deg,#2B5FA0,#7048A0); }
+
+/* Sport hub */
+.sport-hub { padding: 1.5rem 1rem 5rem; max-width:740px; margin:0 auto; }
+
+.sport-hero {
+  background: linear-gradient(135deg, #1A2F55 0%, #2B5FA0 100%);
+  border-radius:1rem; padding:1.5rem; margin-bottom:1.25rem; color:white;
+  position:relative; overflow:hidden;
+}
+.sport-hero::before {
+  content:''; position:absolute; inset:0;
+  background: radial-gradient(ellipse 60% 80% at 80% 30%, rgba(112,72,160,0.3) 0%, transparent 60%);
+}
+.sport-hero-inner { position:relative; }
+.sport-hero h2 { font-family:'Cormorant Garamond',serif; font-size:1.6rem; margin-bottom:.4rem; }
+.sport-hero p { font-size:0.82rem; opacity:0.8; line-height:1.6; }
+.sport-timer-badge {
+  display:inline-flex; align-items:center; gap:.4rem;
+  background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.25);
+  border-radius:2rem; padding:.35rem .85rem; font-size:.75rem; margin-top:.75rem;
+}
+
+/* Configurator */
+.config-card {
+  background:white; border:1px solid var(--line); border-radius:.875rem;
+  padding:1.25rem; margin-bottom:1rem;
+}
+.config-title {
+  font-size:.7rem; text-transform:uppercase; letter-spacing:.12em;
+  color:var(--muted); font-weight:600; margin-bottom:.85rem;
+}
+.focus-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:.4rem; }
+.focus-btn {
+  font-size:.72rem; font-weight:500; padding:.5rem .3rem; border-radius:.6rem;
+  border:1.5px solid var(--line); background:var(--paper); cursor:pointer;
+  transition:all .15s; text-align:center; color:var(--muted);
+  display:flex; flex-direction:column; align-items:center; gap:.15rem;
+}
+.focus-btn .fb-ico { font-size:1.1rem; }
+.focus-btn.selected { background:#2B5FA0; color:white; border-color:#2B5FA0; }
+.focus-btn:hover:not(.selected) { border-color:#2B5FA0; color:#2B5FA0; }
+
+.mat-row { display:flex; gap:.5rem; flex-wrap:wrap; }
+.mat-btn {
+  font-size:.78rem; font-weight:500; padding:.4rem 1rem; border-radius:2rem;
+  border:1.5px solid var(--line); background:white; cursor:pointer;
+  transition:all .15s; color:var(--muted);
+}
+.mat-btn.selected { background:#2B5FA0; color:white; border-color:#2B5FA0; }
+
+.gen-btn {
+  width:100%; font-family:'Outfit',sans-serif; font-size:.85rem; font-weight:600;
+  padding:.85rem; border-radius:.75rem; border:none; cursor:pointer;
+  background:linear-gradient(135deg,#2B5FA0,#7048A0); color:white;
+  transition:all .2s; margin-top:.5rem; letter-spacing:.04em;
+}
+.gen-btn:hover { opacity:.9; transform:translateY(-1px); }
+
+/* Programme généré */
+.prog-wrap { display:none; }
+.prog-wrap.visible { display:block; }
+
+.prog-phase-title {
+  font-family:'Cormorant Garamond',serif; font-size:1.2rem;
+  margin:1.5rem 0 .75rem; display:flex; align-items:center; gap:.5rem;
+  padding-bottom:.5rem; border-bottom:1px solid var(--line);
+}
+
+.exercise-card {
+  background:white; border:1px solid var(--line); border-radius:.875rem;
+  overflow:hidden; margin-bottom:.75rem; transition:box-shadow .18s;
+}
+.exercise-card:hover { box-shadow:0 3px 16px rgba(0,0,0,.07); }
+
+.ex-header {
+  display:grid; grid-template-columns:70px 1fr auto;
+  align-items:center; gap:.75rem; padding:.75rem 1rem;
+  border-bottom:1px solid var(--line); background:var(--paper2);
+}
+.ex-svg { width:60px; height:60px; }
+.ex-info .ex-name {
+  font-family:'Cormorant Garamond',serif; font-size:1rem; font-weight:600;
+  margin-bottom:.2rem;
+}
+.ex-meta { display:flex; gap:.5rem; flex-wrap:wrap; margin-top:.25rem; }
+.ex-tag {
+  font-size:.65rem; font-weight:600; text-transform:uppercase; letter-spacing:.08em;
+  padding:.15rem .5rem; border-radius:1rem;
+}
+.tag-dur { background:#D0DEF5; color:#2B5FA0; }
+.tag-focus { background:var(--phase-evict-l); color:var(--phase-evict); }
+.tag-mat { background:var(--w2l); color:var(--w2); }
+
+.ex-timer-btn {
+  font-family:'Outfit',sans-serif; font-size:.7rem; font-weight:600;
+  padding:.35rem .7rem; border-radius:1.5rem; border:1.5px solid #2B5FA0;
+  background:white; color:#2B5FA0; cursor:pointer; white-space:nowrap;
+  transition:all .15s;
+}
+.ex-timer-btn:hover { background:#2B5FA0; color:white; }
+.ex-timer-btn.running { background:#A84E0A; border-color:#A84E0A; color:white; }
+
+.ex-body { padding:.85rem 1rem; font-size:.82rem; color:var(--muted); line-height:1.65; }
+
+/* Méditation cards */
+.med-card {
+  background:white; border:1px solid var(--line); border-radius:.875rem;
+  overflow:hidden; margin-bottom:.75rem;
+}
+.med-header {
+  display:grid; grid-template-columns:70px 1fr auto;
+  align-items:center; gap:.75rem; padding:.75rem 1rem;
+  border-bottom:1px solid var(--line);
+  background:linear-gradient(135deg,#F0EAFC,#E8DCFA);
+}
+.med-number {
+  width:28px; height:28px; border-radius:50%;
+  background:#7048A0; color:white; font-weight:600; font-size:.82rem;
+  display:flex; align-items:center; justify-content:center; flex-shrink:0;
+}
+.med-name { font-family:'Cormorant Garamond',serif; font-size:1rem; font-weight:600; }
+.med-body { padding:.85rem 1rem; font-size:.82rem; color:var(--muted); line-height:1.65; }
+
+/* Global timer display */
+.global-timer {
+  position:sticky; bottom:1rem; left:0; right:0;
+  max-width:400px; margin:0 auto;
+  background:var(--ink); color:white; border-radius:1rem;
+  padding:.85rem 1.25rem; display:flex; align-items:center;
+  justify-content:space-between; gap:1rem;
+  box-shadow:0 4px 24px rgba(0,0,0,.25); display:none;
+}
+.global-timer.show { display:flex; }
+.gt-info .gt-name { font-size:.8rem; color:rgba(255,255,255,.7); }
+.gt-info .gt-time { font-family:'Cormorant Garamond',serif; font-size:2rem; font-weight:600; color:white; }
+.gt-stop {
+  font-size:.72rem; font-weight:600; padding:.35rem .85rem;
+  border-radius:2rem; border:1.5px solid rgba(255,255,255,.3);
+  background:transparent; color:white; cursor:pointer;
+}
+.gt-stop:hover { background:rgba(255,255,255,.1); }
+
+.prog-note {
+  background:linear-gradient(135deg,#EFF8F3,#F8F4EE);
+  border:1px solid #B8D8C8; border-radius:.75rem;
+  padding:.85rem 1.1rem; font-size:.8rem; color:#2A4A38; line-height:1.65;
+  margin-top:1rem;
+}
+.prog-note strong { color:var(--phase-evict); }
+
+@media(max-width:500px){
+  .focus-grid { grid-template-columns:repeat(3,1fr); }
+  .ex-header { grid-template-columns:55px 1fr auto; }
+}
+
+</style>
+</head>
+<body>
+
+<!-- ══ SPLASH ══ -->
+<div id="splash">
+  <div class="splash-inner">
+    <div class="splash-badge">Programme complet · FODMAPs · SCI/MICI · Sans gluten · Sport · Méditation</div>
+    <h1>Mon programme<br><em>digestif</em> guidé</h1>
+    <p>15 jours d'<strong>éviction</strong> pour apaiser l'intestin (adapté SCI &amp; MICI), 30 jours de <strong>réintroduction</strong> progressive — plus un module <strong>Sport &amp; Méditation</strong> quotidien de 15 min.</p>
+    <div class="phase-cards">
+      <div class="phase-card evict" onclick="startApp('evict')">
+        <div class="pc-icon">🌿</div>
+        <div class="pc-label">Phase 1 · 15 jours</div>
+        <div class="pc-title">Régime d'éviction</div>
+        <div class="pc-sub">Pauvre en FODMAPs, sans gluten, adapté SCI &amp; MICI — pour apaiser les symptômes</div>
+      </div>
+      <div class="phase-card reintr" onclick="startApp('reintr')">
+        <div class="pc-icon">🔬</div>
+        <div class="pc-label">Phase 2 · 30 jours</div>
+        <div class="pc-title">Réintroduction</div>
+        <div class="pc-sub">4 familles de FODMAPs testées une par une, avec journal de tolérance</div>
+      </div>
+      <div class="phase-card sport" onclick="startApp('sport')">
+        <div class="pc-icon">🧘</div>
+        <div class="pc-label">Module · 15 min/jour</div>
+        <div class="pc-title">Sport & Méditation</div>
+        <div class="pc-sub">Pilates au mur 10 min + relaxation pleine conscience 5 min</div>
+      </div>
+    </div>
+    <p style="font-size:0.75rem; color:#5A5040;">⚠️ Programme indicatif. En cas de douleurs persistantes, consultez un médecin et/ou une diététicienne spécialisée.</p>
+  </div>
+</div>
+
+<!-- ══ APP ══ -->
+<div id="app">
+  <div class="topbar">
+    <div class="topbar-home" onclick="goHome()">← Accueil</div>
+    <div class="topbar-title" id="topbarTitle">Mon <em>programme</em></div>
+    <div class="topbar-phase-dot" id="topbarDot"></div>
+  </div>
+  <div class="phase-tabs" id="phaseTabs"></div>
+  <div class="progress-bar-wrap" id="progressWrap">
+    <div class="progress-label" id="progressLabel"></div>
+    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  </div>
+  <div class="days-bar" id="daysBar"></div>
+  <div class="content" id="content"></div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════
+// DATA
+// ══════════════════════════════════════════════
+
+const evictDays = [
+  { label:'Lundi', num:1, tip:'Le riz basmati est mieux toléré que le riz blanc classique. Rincez-le toujours avant cuisson.',
+    meals:[
+      {ico:'🌅',lbl:'Petit-déj',name:'Porridge de flocons de riz au lait de coco',items:['Flocons de riz + lait de coco (125 ml)','Banane mûre (½)','1 c.à.c de beurre de cacahuète (sans sucre ajouté)','Thé vert ou infusion']},
+      {ico:'☀️',lbl:'Déjeuner',name:'Poulet rôti, carottes et riz basmati',items:['Blanc de poulet rôti aux herbes (thym, romarin)','Carottes cuites à la vapeur','Riz basmati (180g cuit)','Huile d\'olive + sel, poivre']},
+      {ico:'🍵',lbl:'Collation',name:'Collation légère',items:['15 chips de riz nature','1 mandarine (petite)']},
+      {ico:'🌙',lbl:'Dîner',name:'Saumon vapeur, épinards et quinoa',items:['Pavé de saumon cuit vapeur','Épinards sautés à l\'huile d\'olive','Quinoa (150g cuit)','Jus de citron + huile d\'olive']}
+    ]},
+  { label:'Mardi', num:2, tip:'Le tamari remplace la sauce soja classique — vérifiez l\'étiquette, il doit être certifié sans gluten.',
+    meals:[
+      {ico:'🌅',lbl:'Petit-déj',name:'Œufs brouillés et pain de riz grillé',items:['2 œufs brouillés (cuisson douce)','2 tranches de pain de riz ou sarrasin sans gluten','1 tomate (petite, en dés)','Café ou thé sans lait de vache']},
+      {ico:'☀️',lbl:'Déjeuner',name:'Salade de quinoa, feta et légumes d\'été',items:['Quinoa froid (150g cuit)','Concombre (max ½)','Tomate cerise (max 10)','Feta émiettée (30g)','Roquette','Vinaigrette : citron + huile d\'olive + moutarde sans gluten']},
+      {ico:'🍵',lbl:'Collation',name:'Collation légère',items:['1 petite poignée de noix (max 10)','1 kiwi']},
+      {ico:'🌙',lbl:'Dîner',name:'Wok de crevettes, courgette et vermicelles de riz',items:['Crevettes décortiquées sautées à l\'huile de sésame','Courgette en julienne (½)','Vermicelles de riz cuits','Tamari (sans gluten) + gingembre frais + citron vert']}
+    ]},
+  { label:'Mercredi', num:3, tip:'Les lentilles corail sont mieux tolérées que les lentilles vertes. Démarrez avec de petites portions.',
+    meals:[
+      {ico:'🌅',lbl:'Petit-déj',name:'Smoothie bowl banane-fraise',items:['½ banane + 5 fraises mixées','Lait d\'avoine certifié sans gluten (ou lait de riz)','1 c.à.s de graines de chia + quelques myrtilles']},
+      {ico:'☀️',lbl:'Déjeuner',name:'Dinde mijotée aux poivrons et riz complet',items:['Escalope de dinde émincée','Poivron rouge (½)','Tomate en dés (1 petite)','Riz complet','Basilic, persil']},
+      {ico:'🍵',lbl:'Collation',name:'Collation légère',items:['1 galette de riz soufflé nature','1 c.à.s de purée d\'amandes']},
+      {ico:'🌙',lbl:'Dîner',name:'Soupe de lentilles corail et lait de coco',items:['Lentilles corail (80g sèches max)','Lait de coco (125ml)','Curcuma + cumin + gingembre','1 petite carotte + zeste de citron','Galette de riz']}
+    ]},
+  { label:'Jeudi', num:4, tip:'La patate douce remplace parfaitement la pomme de terre et est très bien tolérée sur le plan digestif.',
+    meals:[
+      {ico:'🌅',lbl:'Petit-déj',name:'Yaourt de coco et fruits rouges',items:['Yaourt de coco nature sans sucre ajouté (150g)','Myrtilles + framboises (80g max)','1 c.à.s de graines de tournesol','Sirop d\'érable (quelques gouttes)']},
+      {ico:'☀️',lbl:'Déjeuner',name:'Filet de cabillaud, patate douce et haricots verts',items:['Cabillaud cuit en papillote (citron + herbes)','Patate douce rôtie (150g)','Haricots verts (100g)','Huile d\'olive + fleur de sel']},
+      {ico:'🍵',lbl:'Collation',name:'Collation légère',items:['1 poignée de raisins secs (petite)','Quelques amandes (max 10)']},
+      {ico:'🌙',lbl:'Dîner',name:'Omelette aux épinards et purée de patate douce',items:['3 œufs + épinards frais sautés','Purée de patate douce maison (huile d\'olive)','Roquette en salade, vinaigrette citron']}
+    ]},
+  { label:'Vendredi', num:5, tip:'Pour cuisiner sans ail ni oignon, utilisez l\'huile infusée à l\'ail — les FODMAPs ne passent pas dans l\'huile.',
+    meals:[
+      {ico:'🌅',lbl:'Petit-déj',name:'Pain de sarrasin grillé, œuf poché et avocat',items:['1 tranche de pain de sarrasin (100% sarrasin)','1 œuf poché','¼ d\'avocat en tranches','Quelques graines de sésame']},
+      {ico:'☀️',lbl:'Déjeuner',name:'Salade niçoise revisitée sans gluten',items:['Thon au naturel (1 boîte)','Tomates cerise + haricots verts cuits','Œufs durs (2)','Olives (10 max)','Roquette','Vinaigrette moutarde-citron-huile d\'olive']},
+      {ico:'🍵',lbl:'Collation',name:'Collation légère',items:['1 orange','1–2 carrés de chocolat noir 70%+']},
+      {ico:'🌙',lbl:'Dîner',name:'Curry de poulet léger au lait de coco et riz basmati',items:['Poulet en morceaux mijoté au lait de coco (125ml)','Épinards + courgette (½)','Curry, curcuma, cumin — sans oignon ni ail','Riz basmati blanc']}
+    ]},
+  { label:'Samedi', num:6, tip:'Le weekend est une bonne occasion de préparer une grande quantité de riz ou quinoa à conserver 3 jours au frigo.',
+    meals:[
+      {ico:'🌅',lbl:'Petit-déj',name:'Pancakes de sarrasin légers',items:['Farine de sarrasin (50g) + 1 œuf + lait de riz','Sirop d\'érable (1 c.à.c)','Myrtilles fraîches']},
+      {ico:'☀️',lbl:'Déjeuner',name:'Côte de porc, pommes de terre et salade verte',items:['Côte de porc grillée ou rôtie','Pommes de terre vapeur (200g)','Salade verte + concombre + vinaigrette légère']},
+      {ico:'🍵',lbl:'Collation',name:'Collation légère',items:['Fromage à pâte dure (emmental, comté)','3 biscuits de riz nature']},
+      {ico:'🌙',lbl:'Dîner',name:'Soupe de carottes-gingembre et pain de sarrasin',items:['Carottes mixées + bouillon maison','Gingembre frais + lait de coco (50ml)','1 tranche de pain de sarrasin grillé','Graines de courge en garniture']}
+    ]},
+  { label:'Dimanche', num:7, tip:'Fin de semaine 1 ! Notez vos symptômes dans un journal alimentaire pour identifier vos déclencheurs personnels.',
+    meals:[
+      {ico:'🌅',lbl:'Petit-déj',name:'Bol de riz au lait de coco façon thaï',items:['Riz rond cuit au lait de coco (125ml) + eau','½ banane + quelques framboises','1 c.à.c de miel (modéré)','Graines de chia + noix de coco râpée']},
+      {ico:'☀️',lbl:'Déjeuner',name:'Agneau rôti aux herbes, légumes racines et quinoa',items:['Gigot ou côtelettes d\'agneau rôties','Panais + carottes + pommes de terre rôties','Quinoa en accompagnement']},
+      {ico:'🍵',lbl:'Collation',name:'Collation légère',items:['1 poignée de myrtilles fraîches','Quelques noix de macadamia']},
+      {ico:'🌙',lbl:'Dîner',name:'Velouté de butternut et tartines de riz',items:['Butternut (portion max 1/3 de courge)','Crème de coco (1 c.à.s)','Noix de muscade + poivre','2 galettes de riz complètes']}
+    ]},
+  { label:'Lundi', num:8, tip:'Le riz sauvage est bien toléré et apporte une texture intéressante. Il se conserve 4 jours au frigo.',
+    meals:[
+      {ico:'🌅',lbl:'Petit-déj',name:'Bowl avocat-œuf sur pain de riz grillé',items:['2 tranches de pain de riz sans gluten grillées','¼ avocat écrasé + jus de citron','1 œuf poché ou à la coque','Graines de sésame + poivre']},
+      {ico:'☀️',lbl:'Déjeuner',name:'Filet de truite, riz sauvage et épinards',items:['Truite cuite en papillote (citron, aneth)','Riz sauvage mélangé (150g cuit)','Épinards sautés à l\'huile d\'olive','Câpres + zeste de citron']},
+      {ico:'🍵',lbl:'Collation',name:'Collation légère',items:['1 kiwi','10 amandes nature']},
+      {ico:'🌙',lbl:'Dîner',name:'Poêlée de tofu ferme, courgette et nouilles de riz',items:['Tofu ferme (100g) doré à la poêle','Courgette (½) + poivron rouge (¼)','Nouilles de riz sautées','Sauce tamari + gingembre + citron vert']}
+    ]},
+  { label:'Mardi', num:9, tip:'La mangue est bien tolérée en petite quantité (max 80g). Au-delà, la teneur en fructose peut poser problème.',
+    meals:[
+      {ico:'🌅',lbl:'Petit-déj',name:'Flocons de riz chauds aux épices douces',items:['Flocons de riz (50g) + lait de riz','Cannelle + cardamome (1 pincée chacun)','1 c.à.c de sirop d\'érable','5 fraises fraîches']},
+      {ico:'☀️',lbl:'Déjeuner',name:'Salade de riz, crevettes et mangue',items:['Riz basmati froid (150g cuit)','Crevettes cuites (100g)','Dés de mangue (80g max)','Coriandre fraîche + citron vert + huile d\'olive']},
+      {ico:'🍵',lbl:'Collation',name:'Collation légère',items:['Yaourt de coco (100g)','1 poignée de myrtilles']},
+      {ico:'🌙',lbl:'Dîner',name:'Velouté de carottes et poulet rôti froid',items:['Velouté de carottes au cumin','Restes de poulet rôti en tranches','Galette de sarrasin','Quelques graines de tournesol']}
+    ]},
+  { label:'Mercredi', num:10, tip:'Le tabboulé de quinoa remplace parfaitement le tabboulé de boulgour — même fraîcheur, zéro gluten !',
+    meals:[
+      {ico:'🌅',lbl:'Petit-déj',name:'Crêpes de sarrasin légères',items:['Farine de sarrasin (60g) + 1 œuf + lait de riz','Garniture : 1 c.à.c purée d\'amandes + tranches de banane (½)']},
+      {ico:'☀️',lbl:'Déjeuner',name:'Poulet mariné au citron, tabboulé de quinoa',items:['Blanc de poulet mariné (citron + huile d\'olive + herbes) grillé','Tabboulé de quinoa : quinoa + persil + menthe + tomate (petite) + concombre (¼) + citron']},
+      {ico:'🍵',lbl:'Collation',name:'Collation légère',items:['1 orange','Quelques noix']},
+      {ico:'🌙',lbl:'Dîner',name:'Soupe miso et saumon teriyaki maison',items:['Miso léger sans gluten (vérifier l\'étiquette) + tofu + algues','Saumon grillé laqué : tamari + miel (1 c.à.c) + gingembre','Riz vapeur']}
+    ]},
+  { label:'Jeudi', num:11, tip:'Le miso de riz (shiro) est généralement sans gluten — vérifiez toujours l\'étiquette.',
+    meals:[
+      {ico:'🌅',lbl:'Petit-déj',name:'Yaourt de brebis, fruits rouges et granola sans gluten',items:['Yaourt de brebis (150g — mieux toléré que vache)','Granola sans gluten certifié (30g)','Framboises + myrtilles','1 c.à.c de graines de chia']},
+      {ico:'☀️',lbl:'Déjeuner',name:'Tartare de thon, purée de patate douce',items:['Thon naturel assaisonné (citron, ciboulette, huile sésame)','Purée de patate douce maison','Roquette + vinaigrette légère','Galette de riz']},
+      {ico:'🍵',lbl:'Collation',name:'Collation légère',items:['1 carré de chocolat noir 85%','1 mandarine']},
+      {ico:'🌙',lbl:'Dîner',name:'Gratin de courgette et bœuf haché sans gluten',items:['Bœuf haché maigre sauté (herbes, sel, poivre)','Courgette en rondelles','Sauce tomate maison (huile infusée à l\'ail)','Cuit au four 20 min']}
+    ]},
+  { label:'Vendredi', num:12, tip:'Fin de semaine, parfait moment pour préparer des galettes de sarrasin à congeler pour les matins pressés !',
+    meals:[
+      {ico:'🌅',lbl:'Petit-déj',name:'Smoothie vert doux',items:['Épinards frais (poignée)','½ banane + 5 fraises','Lait de coco (100ml)','Gingembre frais (petite tranche)','1 c.à.c de graines de lin moulues']},
+      {ico:'☀️',lbl:'Déjeuner',name:'Brochettes de poulet, polenta crémeuse et tomates cerise',items:['Brochettes de poulet marinées (herbes + huile d\'olive + citron)','Polenta crémeuse (semoule de maïs + eau + sel + huile d\'olive)','Tomates cerise rôties au four']},
+      {ico:'🍵',lbl:'Collation',name:'Collation légère',items:['Fromage à pâte dure (30g)','Quelques raisins frais (max 10)']},
+      {ico:'🌙',lbl:'Dîner',name:'Velouté de céleri-rave et coquilles Saint-Jacques',items:['Céleri-rave en velouté (portion max 75g)','Saint-Jacques snackées à l\'huile d\'olive','Micro-salade de mâche + vinaigrette']}
+    ]},
+  { label:'Samedi', num:13, tip:'La mozzarella fraîche de bufflonne est naturellement pauvre en lactose — une portion de 30g est généralement bien tolérée.',
+    meals:[
+      {ico:'🌅',lbl:'Petit-déj',name:'Œufs cocotte, épinards et toast de riz',items:['2 œufs cuits en cocotte au four (160°C, 12 min)','Épinards frais en dessous','Sel, poivre, muscade','2 tranches de pain de riz grillé']},
+      {ico:'☀️',lbl:'Déjeuner',name:'Côte de porc, pommes sautées et haricots verts',items:['Côte de porc grillée ou rôtie','Pommes golden sautées à la poêle (1 pomme max)','Haricots verts vapeur']},
+      {ico:'🍵',lbl:'Collation',name:'Collation légère',items:['Bol de myrtilles fraîches','10 noisettes']},
+      {ico:'🌙',lbl:'Dîner',name:'Pizza base polenta, garniture légère',items:['Base : polenta épaisse dorée au four ou base pizza sans gluten','Sauce tomate maison + herbes','Mozzarella (30g)','Roquette fraîche + huile d\'olive après cuisson']}
+    ]},
+  { label:'Dimanche', num:14, tip:'Bilan semaine 2 ! Comparez vos symptômes au départ et maintenant. Un journal alimentaire est très précieux.',
+    meals:[
+      {ico:'🌅',lbl:'Petit-déj',name:'Porridge d\'avoine certifiée sans gluten',items:['Flocons d\'avoine certifiés sans gluten (50g) + lait d\'avoine sg','½ banane en rondelles','1 c.à.s de purée de noisettes','Cannelle + 1 c.à.c de miel']},
+      {ico:'☀️',lbl:'Déjeuner',name:'Rôti de veau, carottes fondantes et quinoa à l\'estragon',items:['Rôti de veau cuit lentement (bouillon maison)','Carottes et panais rôtis','Quinoa à l\'estragon frais']},
+      {ico:'🍵',lbl:'Collation',name:'Collation légère',items:['Yaourt de coco nature','Quelques fraises fraîches']},
+      {ico:'🌙',lbl:'Dîner',name:'Soupe thaï citronnelle-coco et crevettes',items:['Bouillon : lait de coco (200ml) + eau + citronnelle + gingembre','Crevettes + champignons shiitake (75g)','Vermicelles de riz','Citron vert + coriandre fraîche']}
+    ]},
+  { label:'Lundi', num:15, tip:'Bravo pour ces 15 jours ! Reposez-vous 2–3 jours supplémentaires en régime strict avant de démarrer la phase de réintroduction.',
+    meals:[
+      {ico:'🌅',lbl:'Petit-déj',name:'Bol de riz soufflé, fruits frais et yaourt de brebis',items:['Yaourt de brebis (150g)','Riz soufflé nature (30g)','Fraises + myrtilles','1 c.à.c de sirop d\'érable']},
+      {ico:'☀️',lbl:'Déjeuner',name:'Pavé de saumon laqué, brocolis et riz basmati',items:['Saumon laqué : tamari + miel (1 c.à.c) + gingembre','Brocolis têtes (max 75g)','Riz basmati blanc','Sésame grillé en garniture']},
+      {ico:'🍵',lbl:'Collation',name:'Collation légère',items:['1 kiwi','10 amandes']},
+      {ico:'🌙',lbl:'Dîner',name:'Plateau de légumes rôtis et œufs mollets',items:['Carottes + courgette + poivron rouge (¼) rôtis à l\'huile d\'olive','2 œufs mollets (6 min)','Sauce : yaourt de brebis + citron + herbes','Quinoa en base']}
+    ]}
+];
+
+const reintrPhases = [
+  {
+    id:'w1', tabClass:'w1-tab', icon:'🍯', label:'Sem. 1', tabName:'Fructose',
+    title:'Fructose & Fructose en excès', subtitle:'Sucres simples fermentescibles',
+    desc:'Le fructose est présent dans le miel, certains fruits (pomme, poire, mangue) et le sirop d\'agave. On teste d\'abord en petite dose, puis on augmente, avec des jours de pause entre chaque test.',
+    foods:['Miel','Pomme','Mangue','Asperge','Sirop d\'agave'],
+    days:[
+      {label:'Lundi J1', type:'test', testFood:'Miel (petite dose)',
+       alert:'TEST · Miel — ½ cuillère à café dans tisane. Observez pendant 24h.',
+       meals:[
+        {ico:'🌅',lbl:'Petit-déj',name:'Bol de riz, yaourt coco, fruits rouges',items:['Flocons de riz + lait de riz','Yaourt coco','Myrtilles + framboises','<span class="ht ht-w1">½ c.à.c de miel dans tisane (TEST)</span>']},
+        {ico:'☀️',lbl:'Déjeuner',name:'Poulet rôti, carottes, riz basmati',items:['Blanc de poulet rôti (herbes)','Carottes vapeur','Riz basmati','Huile d\'olive + citron']},
+        {ico:'🍵',lbl:'Collation',name:'Galettes de riz et noix',items:['2 galettes de riz nature','10 amandes']},
+        {ico:'🌙',lbl:'Dîner',name:'Saumon vapeur, quinoa, épinards',items:['Saumon cuit vapeur','Quinoa (150g cuit)','Épinards sautés huile d\'olive','Citron']}
+       ]},
+      {label:'Mardi J2', type:'observe', testFood:'Observation miel',
+       alert:'OBSERVATION · Régime strict. Notez tous vos symptômes des 24h écoulées.',
+       meals:[
+        {ico:'🌅',lbl:'Petit-déj',name:'Œufs brouillés, pain sarrasin, tomate',items:['2 œufs brouillés','1 tranche pain sarrasin','1 petite tomate','Thé nature']},
+        {ico:'☀️',lbl:'Déjeuner',name:'Dinde, haricots verts, patate douce',items:['Escalope de dinde grillée','Haricots verts vapeur','Patate douce rôtie (150g)','Huile d\'olive']},
+        {ico:'🍵',lbl:'Collation',name:'Yaourt coco nature',items:['Yaourt coco sans sucre','5 framboises fraîches']},
+        {ico:'🌙',lbl:'Dîner',name:'Velouté carottes-gingembre, galette de riz',items:['Soupe carottes + gingembre','1 galette de riz','Graines de courge']}
+       ]},
+      {label:'Mercredi J3', type:'test', testFood:'Miel (dose moyenne)',
+       alert:'TEST · Miel — 1 cuillère à café complète. Si J1 bien toléré, on augmente la dose.',
+       meals:[
+        {ico:'🌅',lbl:'Petit-déj',name:'Porridge riz, fruits rouges, miel test',items:['Flocons de riz cuits au lait de riz','Myrtilles fraîches','<span class="ht ht-w1">1 c.à.c de miel (TEST dose moyenne)</span>']},
+        {ico:'☀️',lbl:'Déjeuner',name:'Cabillaud, riz complet, courgette',items:['Cabillaud poché','Riz complet (150g cuit)','Courgette sautée','Jus de citron + herbes']},
+        {ico:'🍵',lbl:'Collation',name:'Galettes de riz + purée d\'amandes',items:['2 galettes de riz','1 c.à.s purée d\'amandes']},
+        {ico:'🌙',lbl:'Dîner',name:'Crevettes sautées, vermicelles de riz',items:['Crevettes sautées huile sésame + tamari','Vermicelles de riz','½ courgette','Citron vert + coriandre']}
+       ]},
+      {label:'Jeudi J4', type:'pause', testFood:'Pause & reset',
+       alert:'PAUSE 48h · Régime strict de base. Laissez votre intestin se stabiliser.',
+       meals:[
+        {ico:'🌅',lbl:'Petit-déj',name:'Smoothie banane-lait coco-chia',items:['½ banane + lait de coco (125ml)','Graines de chia','Quelques myrtilles']},
+        {ico:'☀️',lbl:'Déjeuner',name:'Quinoa, poulet, légumes rôtis',items:['Quinoa + blanc de poulet grillé','Carottes + panais rôtis','Huile d\'olive + thym']},
+        {ico:'🍵',lbl:'Collation',name:'Noix et fruit frais',items:['10 noix de macadamia','1 kiwi']},
+        {ico:'🌙',lbl:'Dîner',name:'Omelette épinards, salade mâche',items:['Omelette 3 œufs + épinards frais','Salade de mâche + vinaigrette citron','Galette de sarrasin']}
+       ]},
+      {label:'Vendredi J5', type:'test', testFood:'Pomme (petite dose)',
+       alert:'TEST · Pomme — ½ pomme pelée crue ou cuite. La pomme est riche en fructose ET en sorbitol.',
+       meals:[
+        {ico:'🌅',lbl:'Petit-déj',name:'Yaourt coco, pomme test, noix',items:['Yaourt coco nature (150g)','<span class="ht ht-w1">½ pomme pelée en petits dés (TEST)</span>','5 noix','Thé nature']},
+        {ico:'☀️',lbl:'Déjeuner',name:'Saumon teriyaki, riz basmati',items:['Saumon laqué tamari-gingembre','Riz basmati blanc','Sésame grillé']},
+        {ico:'🍵',lbl:'Collation',name:'Galettes de riz nature',items:['2 galettes de riz','Tisane nature']},
+        {ico:'🌙',lbl:'Dîner',name:'Poulet rôti, patate douce, haricots verts',items:['Blanc de poulet rôti aux herbes','Patate douce vapeur (150g)','Haricots verts (100g)','Huile d\'olive']}
+       ]},
+      {label:'Samedi J6', type:'observe', testFood:'Observation pomme',
+       alert:'OBSERVATION · Régime strict. Notez précisément ballonnements, douleurs, transit dans les 24h post-test.',
+       meals:[
+        {ico:'🌅',lbl:'Petit-déj',name:'Pancakes sarrasin, myrtilles',items:['Pancakes farine sarrasin + œuf + lait riz','Myrtilles fraîches','Sirop d\'érable (1 c.à.c)']},
+        {ico:'☀️',lbl:'Déjeuner',name:'Salade niçoise sans gluten',items:['Thon naturel + œufs durs + haricots verts','Tomates cerise + olives','Roquette + vinaigrette citron']},
+        {ico:'🍵',lbl:'Collation',name:'Fruits rouges sûrs',items:['Myrtilles + framboises (80g)','10 amandes']},
+        {ico:'🌙',lbl:'Dîner',name:'Soupe lentilles corail, pain de riz',items:['Lentilles corail (80g sèches) + lait coco + curcuma','1 galette de riz','Citron + coriandre']}
+       ]},
+      {label:'Dimanche J7', type:'pause', testFood:'Pause — Bilan sem. 1',
+       alert:'BILAN SEMAINE 1 · Complétez le suivi ci-dessous. La semaine 2 attaque le Lactose.',
+       meals:[
+        {ico:'🌅',lbl:'Petit-déj',name:'Bol de riz au lait coco',items:['Riz rond cuit lait coco + eau','½ banane + framboises','Graines de chia']},
+        {ico:'☀️',lbl:'Déjeuner',name:'Agneau rôti, légumes racines, quinoa',items:['Côtelettes d\'agneau rôties','Carottes + panais rôtis','Quinoa à l\'estragon']},
+        {ico:'🍵',lbl:'Collation',name:'Tisane et collation neutre',items:['Tisane menthe-gingembre','3 biscuits riz nature']},
+        {ico:'🌙',lbl:'Dîner',name:'Velouté butternut léger, truite vapeur',items:['Velouté butternut (portion ⅓ courge)','Truite vapeur citron-aneth','Riz basmati']}
+       ]}
+    ]
+  },
+  {
+    id:'w2', tabClass:'w2-tab', icon:'🥛', label:'Sem. 2', tabName:'Lactose',
+    title:'Lactose', subtitle:'Sucre du lait fermentescible',
+    desc:'Le lactose est le sucre naturel du lait. Présent en grande quantité dans le lait de vache et la crème. Les fromages à pâte dure (comté, emmental) en contiennent très peu. On teste par ordre de teneur croissante.',
+    foods:['Lait de vache','Yaourt nature','Fromage frais','Crème fraîche'],
+    days:[
+      {label:'Lundi J8', type:'test', testFood:'Lait de vache (100ml)',
+       alert:'TEST · Lait de vache — 100ml dans café ou céréales. Dose de départ pour le lactose.',
+       meals:[
+        {ico:'🌅',lbl:'Petit-déj',name:'Café au lait test, pain de riz, œuf',items:['<span class="ht ht-w2">Café + 100ml lait de vache (TEST)</span>','1 tranche pain de riz grillé','1 œuf à la coque']},
+        {ico:'☀️',lbl:'Déjeuner',name:'Poulet rôti, riz basmati, salade verte',items:['Blanc de poulet rôti','Riz basmati','Salade verte + concombre','Vinaigrette citron']},
+        {ico:'🍵',lbl:'Collation',name:'Fruits rouges + noix',items:['Framboises + myrtilles (80g)','10 noisettes']},
+        {ico:'🌙',lbl:'Dîner',name:'Saumon vapeur, quinoa, épinards',items:['Saumon vapeur citron-aneth','Quinoa (150g cuit)','Épinards sautés huile d\'olive','Pas de crème ni beurre ce soir']}
+       ]},
+      {label:'Mardi J9', type:'observe', testFood:'Observation lait',
+       alert:'OBSERVATION · Régime sans lactose strict. Notez tout symptôme digestif des 24h écoulées.',
+       meals:[
+        {ico:'🌅',lbl:'Petit-déj',name:'Porridge riz, lait de riz, fruits',items:['Flocons de riz + lait de riz (pas lait vache)','Myrtilles fraîches','Thé nature']},
+        {ico:'☀️',lbl:'Déjeuner',name:'Cabillaud, haricots verts, patate douce',items:['Cabillaud en papillote','Haricots verts vapeur','Patate douce rôtie','Huile d\'olive']},
+        {ico:'🍵',lbl:'Collation',name:'Galettes riz + purée d\'amandes',items:['2 galettes de riz','1 c.à.s purée d\'amandes']},
+        {ico:'🌙',lbl:'Dîner',name:'Wok crevettes, vermicelles, légumes',items:['Crevettes sautées + courgette + poivron (¼)','Vermicelles de riz','Tamari + gingembre + citron vert']}
+       ]},
+      {label:'Mercredi J10', type:'test', testFood:'Yaourt nature de vache (125g)',
+       alert:'TEST · Yaourt nature de vache entier — 1 pot (125g). Moins riche en lactose que le lait (fermentation partielle).',
+       meals:[
+        {ico:'🌅',lbl:'Petit-déj',name:'Yaourt nature test, granola sg, fruits',items:['<span class="ht ht-w2">1 pot yaourt nature vache entier 125g (TEST)</span>','Granola certifié sans gluten (25g)','Myrtilles + kiwi']},
+        {ico:'☀️',lbl:'Déjeuner',name:'Dinde grillée, riz, courgette',items:['Escalope dinde grillée aux herbes','Riz basmati','Courgette sautée huile d\'olive','Citron']},
+        {ico:'🍵',lbl:'Collation',name:'Fruit + noix',items:['1 orange','10 amandes']},
+        {ico:'🌙',lbl:'Dîner',name:'Soupe carottes, pain sarrasin, œuf mollet',items:['Velouté carottes-gingembre','1 œuf mollet','1 tranche pain sarrasin','Graines de tournesol']}
+       ]},
+      {label:'Jeudi J11', type:'pause', testFood:'Pause lactose',
+       alert:'PAUSE · 48h sans lactose. Repas de base exclusivement.',
+       meals:[
+        {ico:'🌅',lbl:'Petit-déj',name:'Œufs brouillés, tomate, herbes',items:['2 œufs brouillés + herbes fraîches','1 petite tomate','Thé nature']},
+        {ico:'☀️',lbl:'Déjeuner',name:'Poulet, quinoa, légumes rôtis',items:['Blanc de poulet rôti','Quinoa (150g)','Carottes + panais rôtis','Huile d\'olive']},
+        {ico:'🍵',lbl:'Collation',name:'Yaourt coco + fruits rouges',items:['Yaourt de coco nature','Framboises fraîches']},
+        {ico:'🌙',lbl:'Dîner',name:'Truite, riz sauvage, épinards',items:['Truite cuite en papillote','Riz sauvage mélangé','Épinards sautés + huile d\'olive','Citron']}
+       ]},
+      {label:'Vendredi J12', type:'test', testFood:'Fromage frais (100g)',
+       alert:'TEST · Fromage frais type cottage ou ricotta — 100g. Plus riche en lactose que les pâtes dures.',
+       meals:[
+        {ico:'🌅',lbl:'Petit-déj',name:'Toast sarrasin, fromage frais test, tomate',items:['2 tranches pain sarrasin grillé','<span class="ht ht-w2">100g fromage frais/cottage (TEST)</span>','1 petite tomate + herbes fraîches']},
+        {ico:'☀️',lbl:'Déjeuner',name:'Salade quinoa, thon, légumes',items:['Quinoa froid + thon naturel','Tomates cerise + concombre + roquette','Vinaigrette moutarde-citron']},
+        {ico:'🍵',lbl:'Collation',name:'Galettes + fruit',items:['2 galettes de riz','1 mandarine']},
+        {ico:'🌙',lbl:'Dîner',name:'Bœuf haché, riz, courgette',items:['Bœuf haché maigre aux herbes','Riz basmati','Courgette + sauce tomate maison']}
+       ]},
+      {label:'Samedi J13', type:'observe', testFood:'Observation fromage frais',
+       alert:'OBSERVATION · Notez symptômes. Repos digestif strict aujourd\'hui.',
+       meals:[
+        {ico:'🌅',lbl:'Petit-déj',name:'Smoothie bowl banane-fraise',items:['½ banane + 5 fraises mixées','Lait de riz','Granola sg (25g)','Graines de chia']},
+        {ico:'☀️',lbl:'Déjeuner',name:'Brochettes poulet, polenta crémeuse',items:['Brochettes poulet marinées (citron + herbes)','Polenta crémeuse huile d\'olive','Tomates cerise rôties']},
+        {ico:'🍵',lbl:'Collation',name:'Noix et baies',items:['10 noix de cajou','1 poignée myrtilles']},
+        {ico:'🌙',lbl:'Dîner',name:'Soupe miso, saumon, riz',items:['Miso sans gluten dilué + tofu + algues','Saumon grillé tamari-gingembre','Riz vapeur']}
+       ]},
+      {label:'Dimanche J14', type:'pause', testFood:'Pause — Bilan sem. 2',
+       alert:'BILAN SEMAINE 2 LACTOSE · Résumez vos réactions. Demain : Fructanes/GOS — les plus complexes.',
+       meals:[
+        {ico:'🌅',lbl:'Petit-déj',name:'Crêpes sarrasin, banane, sirop érable',items:['Crêpes farine sarrasin + œuf + lait riz','½ banane + sirop d\'érable (1 c.à.c)','Thé']},
+        {ico:'☀️',lbl:'Déjeuner',name:'Rôti veau, carottes, quinoa',items:['Rôti de veau mijoté (bouillon maison)','Carottes fondantes + panais','Quinoa à l\'estragon']},
+        {ico:'🍵',lbl:'Collation',name:'Yaourt coco + kiwi',items:['Yaourt de coco nature','1 kiwi']},
+        {ico:'🌙',lbl:'Dîner',name:'Velouté poireau léger (vert seulement)',items:['Vert de poireau uniquement (le blanc est riche en FODMAPs)','Bouillon maison + crème de coco','Poulet effiloché','Galette de riz']}
+       ]}
+    ]
+  },
+  {
+    id:'w3', tabClass:'w3-tab', icon:'🌾', label:'Sem. 3', tabName:'Fructanes/GOS',
+    title:'Fructanes & GOS', subtitle:'Oligosaccharides fermentescibles',
+    desc:'Les fructanes sont présents dans le blé, l\'ail, l\'oignon, les poireaux. Les GOS sont dans les légumineuses (pois chiches, lentilles). Ce sont souvent les FODMAPs les plus mal tolérés. Procédez avec prudence.',
+    foods:['Ail (huile infusée)','Oignon cuit','Blé (pain)','Pois chiches','Poireau (blanc)'],
+    days:[
+      {label:'Lundi J15', type:'test', testFood:'Huile infusée à l\'ail (1 c.à.c)',
+       alert:'TEST · Ail — commencez par l\'huile infusée à l\'ail (1 c.à.c). C\'est la forme la moins concentrée en fructanes. PAS d\'ail cru.',
+       meals:[
+        {ico:'🌅',lbl:'Petit-déj',name:'Œufs brouillés, légumes, pain sarrasin',items:['2 œufs brouillés + épinards','<span class="ht ht-w3">Cuisson dans 1 c.à.c huile infusée à l\'ail (TEST)</span>','1 tranche pain sarrasin']},
+        {ico:'☀️',lbl:'Déjeuner',name:'Quinoa, poulet, légumes neutres',items:['Quinoa + blanc de poulet','Courgette + carottes (aucun oignon)','Huile d\'olive neutre']},
+        {ico:'🍵',lbl:'Collation',name:'Yaourt coco + noix',items:['Yaourt coco','10 amandes']},
+        {ico:'🌙',lbl:'Dîner',name:'Saumon, riz, haricots verts',items:['Saumon vapeur','Riz basmati','Haricots verts','Citron + herbes fraîches']}
+       ]},
+      {label:'Mardi J16', type:'observe', testFood:'Observation ail',
+       alert:'OBSERVATION ail · Régime strict sans ail ni oignon. Les fructanes agissent parfois sous 2–4h.',
+       meals:[
+        {ico:'🌅',lbl:'Petit-déj',name:'Porridge riz, myrtilles, sirop érable',items:['Flocons de riz + lait de riz','Myrtilles + 1 c.à.c sirop érable','Thé nature']},
+        {ico:'☀️',lbl:'Déjeuner',name:'Dinde, patate douce, roquette',items:['Escalope dinde grillée','Patate douce rôtie (150g)','Salade roquette + vinaigrette citron']},
+        {ico:'🍵',lbl:'Collation',name:'Fruit + galettes',items:['1 orange','2 galettes de riz']},
+        {ico:'🌙',lbl:'Dîner',name:'Soupe carottes-gingembre, œuf mollet',items:['Velouté carottes + gingembre','2 œufs mollets','Galette de riz']}
+       ]},
+      {label:'Mercredi J17', type:'test', testFood:'Oignon cuit (1 c.à.s)',
+       alert:'TEST · Oignon jaune cuit — 1 c.à.s dans un plat. La cuisson réduit légèrement les FODMAPs.',
+       meals:[
+        {ico:'🌅',lbl:'Petit-déj',name:'Smoothie banane-fraise, galettes riz',items:['½ banane + 5 fraises + lait riz','Graines de chia','2 galettes de riz']},
+        {ico:'☀️',lbl:'Déjeuner',name:'Riz sauté, légumes, oignon test',items:['Riz basmati sauté','Carottes + courgette','<span class="ht ht-w3">1 c.à.s d\'oignon jaune cuit en dés (TEST)</span>','Tamari sans gluten']},
+        {ico:'🍵',lbl:'Collation',name:'Noix + myrtilles',items:['10 noix','1 poignée myrtilles']},
+        {ico:'🌙',lbl:'Dîner',name:'Cabillaud, quinoa, épinards',items:['Cabillaud poché citron-herbes','Quinoa (150g)','Épinards sautés huile d\'olive neutre']}
+       ]},
+      {label:'Jeudi J18', type:'pause', testFood:'Pause fructanes',
+       alert:'PAUSE · 48h de base strict. Pas de fructanes, pas d\'oignon, aucun ail.',
+       meals:[
+        {ico:'🌅',lbl:'Petit-déj',name:'Yaourt coco, fruits rouges, graines',items:['Yaourt coco + framboises + myrtilles','Graines de tournesol','Thé']},
+        {ico:'☀️',lbl:'Déjeuner',name:'Poulet rôti, légumes simples, riz',items:['Blanc de poulet rôti thym-romarin','Haricots verts + carottes vapeur','Riz basmati']},
+        {ico:'🍵',lbl:'Collation',name:'Amandes + kiwi',items:['10 amandes','1 kiwi']},
+        {ico:'🌙',lbl:'Dîner',name:'Saumon, polenta, salade',items:['Saumon grillé tamari-miel (1 c.à.c)','Polenta crémeuse huile d\'olive','Salade mâche + vinaigrette']}
+       ]},
+      {label:'Vendredi J19', type:'test', testFood:'Pois chiches (2 c.à.s)',
+       alert:'TEST · Pois chiches — 2 c.à.s (≈40g) cuits en conserve, bien rincés. Famille des GOS (légumineuses).',
+       meals:[
+        {ico:'🌅',lbl:'Petit-déj',name:'Pancakes sarrasin, banane, sirop érable',items:['Pancakes sarrasin + œuf + lait riz','½ banane','1 c.à.c sirop érable']},
+        {ico:'☀️',lbl:'Déjeuner',name:'Salade pois chiches test, quinoa, légumes',items:['Quinoa (100g cuit)','<span class="ht ht-w3">2 c.à.s pois chiches rincés (TEST GOS)</span>','Roquette + concombre + tomates cerise','Vinaigrette citron-olive']},
+        {ico:'🍵',lbl:'Collation',name:'Galettes + yaourt coco',items:['1 galette de riz','Yaourt coco (80g)']},
+        {ico:'🌙',lbl:'Dîner',name:'Dinde, riz, haricots verts',items:['Escalope dinde grillée','Riz basmati','Haricots verts vapeur','Citron + herbes']}
+       ]},
+      {label:'Samedi J20', type:'observe', testFood:'Observation pois chiches',
+       alert:'OBSERVATION GOS · Les légumineuses peuvent provoquer gaz et ballonnements 4 à 8h après ingestion — notez tout.',
+       meals:[
+        {ico:'🌅',lbl:'Petit-déj',name:'Bowl de riz au lait coco, myrtilles',items:['Riz rond cuit lait coco','Myrtilles + ½ banane','Graines de chia + noix de coco râpée']},
+        {ico:'☀️',lbl:'Déjeuner',name:'Côte de porc, patate douce, salade',items:['Côte de porc grillée','Patate douce rôtie','Salade verte + concombre + vinaigrette légère']},
+        {ico:'🍵',lbl:'Collation',name:'Chocolat noir + noix',items:['2 carrés chocolat noir 85%','8 noisettes']},
+        {ico:'🌙',lbl:'Dîner',name:'Soupe lentilles corail légère, galette',items:['Lentilles corail (60g sèches) + lait coco + curcuma','1 galette de riz','Citron vert + coriandre']}
+       ]},
+      {label:'Dimanche J21', type:'pause', testFood:'Pause — Bilan sem. 3',
+       alert:'BILAN SEMAINE 3 FRUCTANES/GOS · Dernière semaine demain : les Polyols.',
+       meals:[
+        {ico:'🌅',lbl:'Petit-déj',name:'Œufs brouillés, pain sarrasin, tomate',items:['2 œufs brouillés aux herbes','1 tranche pain sarrasin grillé','1 petite tomate','Thé vert']},
+        {ico:'☀️',lbl:'Déjeuner',name:'Magret canard, pommes de terre, salade',items:['Magret de canard grillé','Pommes de terre vapeur (200g)','Salade verte + vinaigrette moutarde']},
+        {ico:'🍵',lbl:'Collation',name:'Fruit frais + noix',items:['1 kiwi + quelques framboises','10 amandes']},
+        {ico:'🌙',lbl:'Dîner',name:'Soupe thaï coco-citronnelle, crevettes',items:['Bouillon coco + citronnelle + gingembre','Crevettes (100g)','Vermicelles riz + champignons shiitake (75g)','Citron vert + coriandre']}
+       ]}
+    ]
+  },
+  {
+    id:'w4', tabClass:'w4-tab', icon:'🍑', label:'Sem. 4', tabName:'Polyols',
+    title:'Polyols', subtitle:'Sucres-alcools fermentescibles',
+    desc:'Les polyols incluent le sorbitol (prunes, cerises, abricots, pommes) et le mannitol (champignons, chou-fleur). Ils sont aussi présents dans certains édulcorants en -ol. Souvent responsables de diarrhée et ballonnements intenses.',
+    foods:['Champignons (mannitol)','Chou-fleur','Pruneaux (sorbitol)','Abricot sec','Édulcorants -ol'],
+    days:[
+      {label:'Lundi J22', type:'test', testFood:'Champignons (50g, mannitol)',
+       alert:'TEST · Champignons de Paris — 50g cuits. Source de mannitol. Forme la plus prévisible pour démarrer.',
+       meals:[
+        {ico:'🌅',lbl:'Petit-déj',name:'Yaourt coco, fruits rouges, graines chia',items:['Yaourt coco + framboises + myrtilles','Graines de chia + 1 c.à.c sirop érable','Thé']},
+        {ico:'☀️',lbl:'Déjeuner',name:'Poulet, riz, champignons test',items:['Blanc de poulet grillé','Riz basmati','<span class="ht ht-w4">50g champignons de Paris sautés (TEST mannitol)</span>','Huile d\'olive + persil frais']},
+        {ico:'🍵',lbl:'Collation',name:'Noix + galettes riz',items:['10 noix','1 galette de riz']},
+        {ico:'🌙',lbl:'Dîner',name:'Saumon, quinoa, épinards',items:['Saumon vapeur citron','Quinoa (150g)','Épinards sautés','Huile d\'olive + herbes']}
+       ]},
+      {label:'Mardi J23', type:'observe', testFood:'Observation champignons',
+       alert:'OBSERVATION mannitol · Les polyols agissent vite (2–4h). Notez précisément la nature et le délai des symptômes.',
+       meals:[
+        {ico:'🌅',lbl:'Petit-déj',name:'Porridge riz, banane, lait riz',items:['Flocons de riz + lait de riz','½ banane','Graines de tournesol','Thé nature']},
+        {ico:'☀️',lbl:'Déjeuner',name:'Salade niçoise sg, sans champignons',items:['Thon + œufs durs + haricots verts','Tomates cerise + olives + roquette','Vinaigrette citron — aucun champignon']},
+        {ico:'🍵',lbl:'Collation',name:'Kiwi + amandes',items:['1 kiwi','10 amandes']},
+        {ico:'🌙',lbl:'Dîner',name:'Velouté carottes, dinde grillée',items:['Velouté carottes-gingembre (bouillon maison)','Escalope de dinde grillée aux herbes','1 galette de riz']}
+       ]},
+      {label:'Mercredi J24', type:'test', testFood:'Chou-fleur (60g)',
+       alert:'TEST · Chou-fleur — 60g cuit à la vapeur. Riche en mannitol. Très souvent impliqué dans les ballonnements.',
+       meals:[
+        {ico:'🌅',lbl:'Petit-déj',name:'Œufs brouillés, pain sarrasin, herbes',items:['2 œufs brouillés','1 tranche pain sarrasin grillé','Herbes fraîches + poivre','Thé ou café nature']},
+        {ico:'☀️',lbl:'Déjeuner',name:'Cabillaud, riz, chou-fleur test',items:['Cabillaud cuit en papillote','Riz basmati','<span class="ht ht-w4">60g chou-fleur vapeur (TEST mannitol)</span>','Jus de citron + huile d\'olive']},
+        {ico:'🍵',lbl:'Collation',name:'Myrtilles + noix de cajou',items:['1 poignée myrtilles','10 noix de cajou']},
+        {ico:'🌙',lbl:'Dîner',name:'Bœuf haché, polenta, haricots verts',items:['Bœuf haché maigre aux herbes','Polenta crémeuse huile d\'olive','Haricots verts vapeur']}
+       ]},
+      {label:'Jeudi J25', type:'pause', testFood:'Pause polyols',
+       alert:'PAUSE · Repos strict 48h sans polyols. Deux derniers tests importants vendredi et samedi.',
+       meals:[
+        {ico:'🌅',lbl:'Petit-déj',name:'Bowl banane-fraise-lait coco',items:['½ banane + 5 fraises mixées','Lait de coco 100ml','Graines de chia + flocons de riz soufflé']},
+        {ico:'☀️',lbl:'Déjeuner',name:'Agneau grillé, riz, carottes',items:['Côtelettes d\'agneau grillées thym-romarin','Riz basmati','Carottes fondantes vapeur','Huile d\'olive']},
+        {ico:'🍵',lbl:'Collation',name:'Chocolat noir + framboises',items:['2 carrés chocolat 85%','Quelques framboises']},
+        {ico:'🌙',lbl:'Dîner',name:'Omelette épinards, salade, galette',items:['Omelette 3 œufs + épinards frais','Salade mâche + vinaigrette légère','1 galette de sarrasin']}
+       ]},
+      {label:'Vendredi J26', type:'test', testFood:'Pruneaux/abricots secs (sorbitol)',
+       alert:'TEST · Pruneaux — 2 pruneaux (ou 2 abricots secs). Source classique de sorbitol. Attention : effet laxatif possible.',
+       meals:[
+        {ico:'🌅',lbl:'Petit-déj',name:'Porridge riz, pruneaux test, noix',items:['Flocons de riz + lait de riz','<span class="ht ht-w4">2 pruneaux entiers en garniture (TEST sorbitol)</span>','5 noix','Thé nature']},
+        {ico:'☀️',lbl:'Déjeuner',name:'Poulet rôti, patate douce, salade',items:['Blanc de poulet rôti','Patate douce vapeur (150g)','Salade verte + concombre + vinaigrette citron']},
+        {ico:'🍵',lbl:'Collation',name:'Yaourt coco + myrtilles',items:['Yaourt coco nature','Myrtilles fraîches (70g)']},
+        {ico:'🌙',lbl:'Dîner',name:'Saumon teriyaki, riz, épinards',items:['Saumon laqué tamari-gingembre','Riz basmati','Épinards sautés + sésame grillé']}
+       ]},
+      {label:'Samedi J27', type:'observe', testFood:'Observation sorbitol',
+       alert:'OBSERVATION sorbitol · Notez transit, ballonnements, douleurs. Le sorbitol a souvent un effet accéléré sur le transit.',
+       meals:[
+        {ico:'🌅',lbl:'Petit-déj',name:'Pancakes sarrasin, banane, sirop érable',items:['Pancakes sarrasin + œuf + lait riz','½ banane + 1 c.à.c sirop érable','Thé ou café nature']},
+        {ico:'☀️',lbl:'Déjeuner',name:'Plateau légumes rôtis et œufs mollets',items:['Carottes + courgette + poivron rouge (¼) rôtis','2 œufs mollets','Quinoa (base)','Sauce yaourt coco + citron + herbes']},
+        {ico:'🍵',lbl:'Collation',name:'Orange + amandes',items:['1 orange','10 amandes']},
+        {ico:'🌙',lbl:'Dîner',name:'Soupe thaï légère, crevettes',items:['Bouillon coco-citronnelle-gingembre','Crevettes (80g)','Vermicelles de riz','Citron vert + coriandre']}
+       ]},
+      {label:'Dimanche J28 🎉', type:'pause', testFood:'Bilan final — 45 jours complets',
+       alert:'🎉 BILAN FINAL · Félicitations pour l\'ensemble du programme ! Consultez votre tableau de tolérance ci-dessous pour planifier une alimentation personnalisée et durable avec une diététicienne.',
+       meals:[
+        {ico:'🌅',lbl:'Petit-déj',name:'Votre petit-déjeuner préféré toléré !',items:['Choisissez parmi les aliments bien tolérés','C\'est le premier repas de votre nouvelle alimentation','Notez-le dans votre journal']},
+        {ico:'☀️',lbl:'Déjeuner',name:'Repas festif base sûre',items:['Plateau de viandes grillées ou poissons','Légumes bien tolérés de votre liste','Riz ou quinoa','Salade fraîche']},
+        {ico:'🍵',lbl:'Collation',name:'Vos fruits tolérés',items:['Myrtilles, framboises, kiwi, mandarine...','+ quelques noix']},
+        {ico:'🌙',lbl:'Dîner',name:'Repas de célébration selon votre tolérance',items:['Intégrez progressivement les aliments bien tolérés','Restez prudent avec les aliments en zone mitigée','Évitez encore ceux mal tolérés — à retester plus tard']}
+       ]}
+    ]
+  }
+];
+
+// ══════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════
+let activeSection = 'evict'; // 'evict' | 'w1'|'w2'|'w3'|'w4'
+let activeDay = 0;
+let tolData = {};
+try { tolData = JSON.parse(localStorage.getItem('fodmap_tol') || '{}'); } catch(e) {}
+
+function saveTolData() {
+  try { localStorage.setItem('fodmap_tol', JSON.stringify(tolData)); } catch(e) {}
+}
+
+// ══════════════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════════════
+function goHome() {
+  document.getElementById('splash').style.display = 'flex';
+  document.getElementById('app').style.display = 'none';
+}
+
+function startApp(section) {
+  activeSection = section === 'reintr' ? 'w1' : section === 'sport' ? 'sport' : 'evict';
+  activeDay = 0;
+  document.getElementById('splash').style.display = 'none';
+  document.getElementById('app').style.display = 'flex';
+  buildTabs();
+  render();
+}
+
+function buildTabs() {
+  const tabs = document.getElementById('phaseTabs');
+  tabs.innerHTML = `
+    <button class="phase-tab evict-tab${activeSection==='evict'?' active':''}" onclick="setSection('evict')">
+      <span class="pt-icon">🌿</span><span>Éviction</span><span class="pt-name">15 jours</span>
+    </button>
+    <button class="phase-tab sport-tab\${activeSection==='sport'?' active':''}" onclick="setSection('sport')">
+      <span class="pt-icon">🧘</span><span>Sport</span><span class="pt-name">15 min</span>
+    </button>
+    \${reintrPhases.map(p => `
+      <button class="phase-tab ${p.tabClass}${activeSection===p.id?' active':''}" onclick="setSection('${p.id}')">
+        <span class="pt-icon">${p.icon}</span><span>${p.label}</span><span class="pt-name">${p.tabName}</span>
+      </button>
+    `).join('')}
+  `;
+}
+
+function setSection(sec) {
+  activeSection = sec;
+  activeDay = 0;
+  buildTabs();
+  render();
+}
+
+function setDay(d) {
+  activeDay = d;
+  render();
+}
+
+// ══════════════════════════════════════════════
+// RENDER
+// ══════════════════════════════════════════════
+function render() {
+  const isEvict = activeSection === 'evict';
+  const days = isEvict ? evictDays : reintrPhases.find(p=>p.id===activeSection).days;
+  const phase = isEvict ? null : reintrPhases.find(p=>p.id===activeSection);
+  const tabClass = isEvict ? 'evict-tab' : phase.tabClass;
+  const day = days[activeDay];
+
+  // SPORT section
+  if (activeSection === 'sport') { renderSport(); return; }
+
+  // Topbar
+  document.getElementById('topbarTitle').innerHTML = isEvict
+    ? 'Phase 1 — <em>Éviction</em> FODMAPs'
+    : `Phase 2 — Réintroduction <em>${phase.tabName}</em>`;
+  const dotColors = {evict:'#3D6B52',w1:'#3B6E5C',w2:'#7A4F28',w3:'#52398A',w4:'#A84E0A',sport:'#2B5FA0'};
+  document.getElementById('topbarDot').style.background = dotColors[activeSection];
+
+  // Show/hide progress & days for non-sport
+  document.getElementById('progressWrap').style.display = '';
+  document.getElementById('daysBar').style.display = '';
+
+  // Progress
+  const total = days.length;
+  const pct = Math.round(((activeDay+1)/total)*100);
+  document.getElementById('progressLabel').textContent = `Jour ${activeDay+1} sur ${total} — ${pct}%`;
+  const fill = document.getElementById('progressFill');
+  fill.style.width = pct + '%';
+  fill.className = 'progress-fill ' + (isEvict ? 'pf-evict' : 'pf-sport');
+
+  // Days bar
+  const bar = document.getElementById('daysBar');
+  bar.innerHTML = days.map((d,i) => {
+    const label = isEvict ? `J${d.num}` : `J${i+1+(['w1','w2','w3','w4'].indexOf(activeSection))*7}`;
+    return `<button class="day-pill${i===activeDay?' active '+tabClass:''}" onclick="setDay(${i})">${label} · ${d.label.split(' ')[0]}</button>`;
+  }).join('');
+
+  // Content
+  const content = document.getElementById('content');
+
+  // Phase band
+  let phaseBand = '';
+  if (isEvict) {
+    phaseBand = activeDay === 0 ? `
+      <div class="intro-evict">
+        <strong>🌿 Principes clés — Régime FODMAPs adapté SCI &amp; MICI</strong><br>
+        <ul>
+          <li>❌ <strong>Évitez (FODMAPs + irritants MICI)</strong> : ail, oignon, blé, seigle, lait de vache, pommes, poires, miel en excès, légumineuses en grande quantité, alcool, graisses saturées, fritures, épices fortes, fibres insolubles crues en excès</li>
+          <li>✅ <strong>Privilégiez</strong> : riz blanc/basmati, quinoa, sarrasin, pomme de terre, carottes cuites, courgette, épinards cuits, poisson gras oméga-3 (anti-inflammatoire), banane mûre</li>
+          <li>✅ <strong>Protéines douces</strong> : poulet vapeur ou rôti sans peau, poisson blanc et gras, œufs mollets ou brouillés, tofu ferme</li>
+          <li>✅ <strong>Laits végétaux</strong> : coco, riz, avoine certifiée sans gluten — le lait de coco apporte des acides gras à chaîne moyenne bien tolérés</li>
+          <li>🫙 <strong>Spécial MICI</strong> : cuisson douce toujours (vapeur, four, poché). Légumes pelés et cuits. Évitez les crudités en période de poussée.</li>
+          <li>💊 <strong>Nutriments clés</strong> : oméga-3 (saumon, sardine, maquereau), curcuma (anti-inflammatoire), gingembre (anti-nausée), probiotiques naturels (yaourt de brebis/coco)</li>
+        </ul>
+        <br>⚠️ Ce menu est indicatif. Il ne remplace pas un suivi médical. En cas de poussée inflammatoire (MICI), consultez votre gastro-entérologue.
+      </div>` : '';
+  } else {
+    phaseBand = `
+      <div class="phase-band ${tabClass}">
+        <div class="pb-icon">${phase.icon}</div>
+        <div class="pb-body">
+          <div class="pb-sub">${phase.label} · ${phase.subtitle}</div>
+          <h2>${phase.title}</h2>
+          <p>${phase.desc}</p>
+          <div class="food-chips">${phase.foods.map(f=>`<span class="food-chip">${f}</span>`).join('')}</div>
+        </div>
+      </div>`;
+  }
+
+  // Alert / day type
+  let alertHtml = '';
+  if (isEvict) {
+    alertHtml = `<div class="alert-box base"><strong>🌿 Jour ${day.num}</strong> — Régime de base strict. Aliments pauvres en FODMAPs, sans gluten, adaptés SCI &amp; MICI. <span style="opacity:0.75;font-size:.78em">Cuissons douces recommandées — vapeur, four, poché.</span></div>`;
+  } else {
+    const typeMap = {test:'test',pause:'pause',observe:'observe'};
+    const typeLabel = {test:'⚠️ INSTRUCTION TEST',pause:'💤 PAUSE',observe:'👁 OBSERVATION'};
+    alertHtml = `<div class="alert-box ${typeMap[day.type]}"><strong>${typeLabel[day.type]}</strong> — ${day.alert}</div>`;
+  }
+
+  // Badge
+  let badgeHtml = '';
+  if (!isEvict) {
+    const bMap = {test:'badge-test',pause:'badge-pause',observe:'badge-observe'};
+    const bLabel = {test:'🧪 Jour test',pause:'🌿 Pause',observe:'👁 Observation'};
+    badgeHtml = `<span class="badge ${bMap[day.type]}">${bLabel[day.type]}</span>`;
+  } else {
+    badgeHtml = `<span class="badge badge-base">🌿 Régime de base</span>`;
+  }
+
+  // Meals
+  const mealsHtml = day.meals.map(m => `
+    <div class="meal-row">
+      <div class="meal-side"><span class="ico">${m.ico}</span><span class="lbl">${m.lbl}</span></div>
+      <div class="meal-body">
+        <div class="meal-name">${m.name}</div>
+        <ul class="meal-items">${m.items.map(it=>`<li>${it}</li>`).join('')}</ul>
+      </div>
+    </div>
+  `).join('');
+
+  // Tip
+  const tipHtml = day.tip ? `<div class="tip-box"><strong>💡 Astuce</strong> — ${day.tip}</div>` : '';
+
+  // Tolerance box (test days only)
+  const key = activeSection + '_d' + activeDay;
+  const saved = tolData[key] || {};
+  let tolHtml = '';
+  if (!isEvict && day.type === 'test') {
+    tolHtml = `
+      <div class="tol-box">
+        <div class="tol-head">📝 Suivi de tolérance — ${day.testFood}</div>
+        <div class="tol-body">
+          <div class="tol-q">Réaction globale dans les 24h ?</div>
+          <div class="tol-opts" id="tol_react_${key}">
+            <button class="tol-btn${saved.reaction==='ok'?' sel-ok':''}" onclick="tolSelect('${key}','reaction','ok',this)">✅ Aucun symptôme</button>
+            <button class="tol-btn${saved.reaction==='warn'?' sel-warn':''}" onclick="tolSelect('${key}','reaction','warn',this)">⚠️ Léger / mitigé</button>
+            <button class="tol-btn${saved.reaction==='ko'?' sel-ko':''}" onclick="tolSelect('${key}','reaction','ko',this)">❌ Réaction marquée</button>
+          </div>
+          <div class="tol-q">Symptômes notés :</div>
+          <div class="tol-opts">
+            <button class="tol-btn" onclick="this.classList.toggle('sel-warn')">💨 Ballonnements</button>
+            <button class="tol-btn" onclick="this.classList.toggle('sel-warn')">😣 Douleurs</button>
+            <button class="tol-btn" onclick="this.classList.toggle('sel-warn')">💨 Gaz excessifs</button>
+            <button class="tol-btn" onclick="this.classList.toggle('sel-warn')">🚽 Transit modifié</button>
+            <button class="tol-btn" onclick="this.classList.toggle('sel-warn')">🤢 Nausée</button>
+          </div>
+          <textarea class="note-area" id="note_${key}" placeholder="Notes libres (délai, intensité, durée…)">${saved.note||''}</textarea>
+          <div class="save-row">
+            <button class="save-btn" onclick="saveNote('${key}')">Enregistrer</button>
+            <span class="saved-flash" id="flash_${key}">✓ Sauvegardé</span>
+          </div>
+        </div>
+      </div>`;
+  }
+
+  // Bilan (last day of each reintr week)
+  let bilanHtml = '';
+  if (!isEvict && activeDay === days.length - 1) {
+    const allTests = [];
+    reintrPhases.forEach((ph, pi) => {
+      ph.days.forEach((d, di) => {
+        if (d.type === 'test') {
+          const k = ph.id + '_d' + di;
+          const sv = tolData[k] || {};
+          allTests.push({ food: d.testFood, reaction: sv.reaction });
+        }
+      });
+    });
+    const tag = r => {
+      if (!r) return `<span class="bilan-tag bilan-pending">En attente</span>`;
+      if (r==='ok') return `<span class="bilan-tag bilan-ok">✅ Bien toléré</span>`;
+      if (r==='warn') return `<span class="bilan-tag bilan-warn">⚠️ Mitigé</span>`;
+      return `<span class="bilan-tag bilan-ko">❌ Mal toléré</span>`;
+    };
+    bilanHtml = `
+      <div class="bilan-wrap">
+        <div class="bilan-title">📊 Tableau de tolérance global</div>
+        ${allTests.map(t=>`
+          <div class="bilan-row">
+            <span class="bilan-food">${t.food}</span>
+            ${tag(t.reaction)}
+          </div>`).join('')}
+      </div>`;
+  }
+
+  content.innerHTML = `
+    ${phaseBand}
+    <div class="day-row">
+      <div class="day-title">${isEvict ? `Jour ${day.num} · ${day.label}` : day.label}</div>
+      ${badgeHtml}
+    </div>
+    ${alertHtml}
+    <div class="meals-grid">${mealsHtml}</div>
+    ${tipHtml}
+    ${tolHtml}
+    ${bilanHtml}
+  `;
+}
+
+function tolSelect(key, field, val, btn) {
+  const parent = btn.closest('.tol-opts');
+  parent.querySelectorAll('.tol-btn').forEach(b => b.classList.remove('sel-ok','sel-warn','sel-ko'));
+  btn.classList.add(val==='ok'?'sel-ok':val==='warn'?'sel-warn':'sel-ko');
+  if (!tolData[key]) tolData[key] = {};
+  tolData[key][field] = val;
+}
+
+function saveNote(key) {
+  const note = document.getElementById('note_'+key)?.value || '';
+  if (!tolData[key]) tolData[key] = {};
+  tolData[key].note = note;
+  saveTolData();
+  const f = document.getElementById('flash_'+key);
+  if (f) { f.classList.add('show'); setTimeout(()=>f.classList.remove('show'), 2200); }
+}
+
+// ══════════════════════════════════════════════
+// SPORT & MÉDITATION MODULE
+// ══════════════════════════════════════════════
+
+// SPORT MODULE DATA
+const focusZones = ['abdo','dos','jambes','bras','global'];
+const focusLabels = {abdo:'Abdominaux',dos:'Dos',jambes:'Jambes',bras:'Bras',global:'Global'};
+const focusIcons = {abdo:'🎯',dos:'🔵',jambes:'🦵',bras:'💪',global:'⭐'};
+
+const wallPilates = {
+  abdo: [
+    {name:'Respiration hypopressive debout au mur',dur:60,desc:'Dos au mur, pieds à 15cm. Inspirez, expirez tout l\'air, rentrez le nombril vers la colonne. Apnée 5–8s. Relâchez. Répétez 5x.',focus:'Abdo bas + transverse',mat:false,svg:'<circle cx="50" cy="30" r="12" fill="#D0E8DC"/><rect x="44" y="42" width="12" height="30" rx="4" fill="#3D6B52"/><path d="M44 55 Q30 55 28 48" stroke="#3D6B52" fill="none" stroke-width="2"/><path d="M56 55 Q70 55 72 48" stroke="#3D6B52" fill="none" stroke-width="2"/><rect x="10" y="20" width="6" height="80" rx="2" fill="#B8C8B4"/><text x="50" y="90" text-anchor="middle" font-size="9" fill="#5A9478">Apnée ↑</text>'},
+    {name:'Pont fessier au mur – abdo bas hypopressif',dur:60,desc:'Allongée, pieds au mur genoux à 90°. Expirez, videz les poumons, rentrez le bas-ventre. Soulevez le bassin lentement. Maintenez 5s. 8 répétitions.',focus:'Abdo bas + fessiers',mat:false,svg:'<ellipse cx="50" cy="70" rx="35" ry="8" fill="#D0E8DC"/><path d="M15 70 Q25 40 50 35 Q65 30 75 55 Q70 65 55 68" stroke="#3D6B52" fill="none" stroke-width="3"/><rect x="72" y="50" width="6" height="30" rx="2" fill="#B8C8B4"/><text x="50" y="88" text-anchor="middle" font-size="9" fill="#5A9478">Bassin ↑</text>'},
+    {name:'Genou-poitrine glissé au mur – abdo haut',dur:45,desc:'Debout face au mur à bras tendus. Montez un genou vers la poitrine en expirant fort. Rentrez les côtes. 10 reps chaque jambe.',focus:'Abdo haut + gainage',mat:false,svg:'<circle cx="50" cy="25" r="10" fill="#D0E8DC"/><rect x="45" y="35" width="10" height="25" rx="4" fill="#3D6B52"/><path d="M45 55 L35 70 M55 55 L55 80" stroke="#3D6B52" stroke-width="3" fill="none"/><path d="M35 70 L50 62" stroke="#3D6B52" stroke-width="2" fill="none"/><rect x="75" y="15" width="5" height="75" rx="2" fill="#B8C8B4"/><text x="50" y="92" text-anchor="middle" font-size="9" fill="#5A9478">Genou ↑</text>'},
+    {name:'Enroulé vertébral mur – abdo profond',dur:50,desc:'Dos au mur, pieds à 20cm. Fléchissez les genoux en glissant le dos, expirez, rentrez le nombril. Descendez jusqu\'à mi-chemin. 8 reps lentes.',focus:'Abdo profond + transverse',mat:false,svg:'<circle cx="50" cy="22" r="10" fill="#D0E8DC"/><path d="M44 32 Q40 45 42 60 Q44 72 46 78" stroke="#3D6B52" fill="none" stroke-width="3"/><path d="M56 32 Q60 45 58 60 Q56 72 54 78" stroke="#3D6B52" fill="none" stroke-width="3"/><rect x="10" y="15" width="5" height="80" rx="2" fill="#B8C8B4"/><text x="50" y="93" text-anchor="middle" font-size="9" fill="#5A9478">Glissement ↓</text>'},
+    {name:'Ciseaux jambes au sol – abdo bas lent',dur:60,desc:'Allongée, dos au sol, mains sous les fesses. Levez les deux jambes à 90°. Alternez descente lente d\'une jambe à 30cm du sol. 10 reps. Pas de cambrure.',focus:'Abdo bas',mat:false,svg:'<ellipse cx="50" cy="72" rx="38" ry="7" fill="#D0E8DC"/><path d="M12 72 Q20 55 50 50" stroke="#3D6B52" fill="none" stroke-width="3"/><path d="M50 50 L60 30 M50 50 L65 50" stroke="#3D6B52" stroke-width="3" fill="none"/><text x="50" y="90" text-anchor="middle" font-size="9" fill="#5A9478">Ciseaux lents</text>'},
+  ],
+  dos: [
+    {name:'Chat-vache au mur',dur:60,desc:'Mains au mur à hauteur des épaules, bras tendus. Inspirez et creusez le dos (vache). Expirez et arrondissez la colonne vers le ciel (chat). 10 cycles lents.',focus:'Mobilité dorsale',mat:false,svg:'<circle cx="50" cy="25" r="10" fill="#D0E8DC"/><path d="M44 35 Q38 50 42 62 Q46 70 50 72" stroke="#3D6B52" fill="none" stroke-width="3"/><path d="M56 35 Q62 50 58 62 Q54 70 50 72" stroke="#3D6B52" fill="none" stroke-width="3"/><path d="M50 72 L40 85 M50 72 L60 85" stroke="#3D6B52" fill="none" stroke-width="2.5"/><rect x="72" y="30" width="5" height="25" rx="2" fill="#B8C8B4"/><text x="50" y="96" text-anchor="middle" font-size="9" fill="#5A9478">Flexion/extension</text>'},
+    {name:'Oiseau-chien debout au mur',dur:60,desc:'Debout dos au mur. Tendez un bras devant et la jambe opposée derrière simultanément. Maintenez 5s. 8 reps chaque côté. Le dos reste plaqué.',focus:'Dos + équilibre',mat:false,svg:'<circle cx="50" cy="28" r="10" fill="#D0E8DC"/><rect x="45" y="38" width="10" height="22" rx="4" fill="#3D6B52"/><path d="M45 48 L22 42" stroke="#3D6B52" stroke-width="3" fill="none"/><path d="M55 55 L78 65" stroke="#3D6B52" stroke-width="3" fill="none"/><rect x="10" y="20" width="5" height="75" rx="2" fill="#B8C8B4"/><text x="50" y="92" text-anchor="middle" font-size="9" fill="#5A9478">Bras ↔ Jambe</text>'},
+    {name:'Enroulé cervical mur',dur:45,desc:'Dos et nuque au mur. Menton vers poitrine lentement sur 4 temps. Remontez sur 4 temps. 8 reps. Décolle uniquement la tête.',focus:'Cervicales + dos haut',mat:false,svg:'<circle cx="50" cy="22" r="12" fill="#D0E8DC"/><path d="M50 34 Q48 45 50 55" stroke="#3D6B52" fill="none" stroke-width="3"/><path d="M50 34 L50 22" stroke="#A84E0A" stroke-width="2" stroke-dasharray="3,2"/><rect x="10" y="15" width="5" height="80" rx="2" fill="#B8C8B4"/><text x="50" y="90" text-anchor="middle" font-size="9" fill="#5A9478">Menton ↓</text>'},
+    {name:'Nageur au sol',dur:60,desc:'Allongée sur le ventre, bras devant. Levez le bras droit et la jambe gauche en même temps, 3s de maintien. Alternez. 10 reps chaque côté. Regard vers le sol.',focus:'Dos bas + lombaires',mat:false,svg:'<ellipse cx="50" cy="58" rx="38" ry="7" fill="#D0E8DC"/><circle cx="50" cy="38" r="10" fill="#D0E8DC"/><path d="M12 55 Q30 50 50 48 Q70 50 88 55" stroke="#3D6B52" fill="none" stroke-width="3"/><path d="M50 38 L28 28 M50 48 L72 58" stroke="#3D6B52" stroke-width="3" fill="none"/><text x="50" y="75" text-anchor="middle" font-size="9" fill="#5A9478">Nageur alterné</text>'},
+    {name:'Squat au mur – décompression lombaire',dur:60,desc:'Dos au mur, pieds à 40cm. Glissez jusqu\'à 90° de flexion. Maintenez 20–30s en respirant lentement. 3 séries. Le bas du dos s\'étire.',focus:'Lombaires + quadriceps',mat:false,svg:'<circle cx="50" cy="20" r="10" fill="#D0E8DC"/><path d="M44 30 L40 55 L32 80" stroke="#3D6B52" fill="none" stroke-width="3"/><path d="M56 30 L60 55 L68 80" stroke="#3D6B52" fill="none" stroke-width="3"/><rect x="10" y="15" width="5" height="70" rx="2" fill="#B8C8B4"/><path d="M32 80 L68 80" stroke="#3D6B52" fill="none" stroke-width="2"/><text x="50" y="92" text-anchor="middle" font-size="9" fill="#5A9478">90° maintenu</text>'},
+  ],
+  jambes: [
+    {name:'Demi-squat isométrique au mur',dur:60,desc:'Dos au mur, glissez à 90° ou 110° selon votre niveau. Maintenez 30 secondes, respirez normalement. 4 séries. Genoux dans l\'axe des pieds.',focus:'Quadriceps + fessiers',mat:false,svg:'<circle cx="50" cy="20" r="10" fill="#D0E8DC"/><path d="M44 30 L40 55 L32 80" stroke="#3D6B52" fill="none" stroke-width="3"/><path d="M56 30 L60 55 L68 80" stroke="#3D6B52" fill="none" stroke-width="3"/><path d="M32 80 L68 80" stroke="#3D6B52" fill="none" stroke-width="2"/><rect x="8" y="15" width="5" height="70" rx="2" fill="#B8C8B4"/><text x="50" y="92" text-anchor="middle" font-size="9" fill="#5A9478">Maintien 30s</text>'},
+    {name:'Relevé de pointe de pied au mur',dur:50,desc:'Face au mur, mains posées légèrement. Montez sur la pointe des deux pieds lentement (3s montée, 3s descente). 15 répétitions. Jambes tendues.',focus:'Mollets + chevilles',mat:false,svg:'<circle cx="50" cy="28" r="10" fill="#D0E8DC"/><rect x="45" y="38" width="10" height="28" rx="4" fill="#3D6B52"/><path d="M45 60 L38 80 M55 60 L58 80" stroke="#3D6B52" fill="none" stroke-width="2.5"/><path d="M35 80 L42 74 M55 80 L61 74" stroke="#3D6B52" fill="none" stroke-width="2"/><rect x="72" y="20" width="5" height="65" rx="2" fill="#B8C8B4"/><text x="50" y="93" text-anchor="middle" font-size="9" fill="#5A9478">Pointe ↑</text>'},
+    {name:'Fente glissée au mur',dur:60,desc:'Un pied contre le mur le genou fléchi à 90°, l\'autre jambe tendue derrière. Maintenez 20s par côté. Sentez l\'étirement du psoas. 3 répétitions par jambe.',focus:'Psoas + fessiers',mat:false,svg:'<circle cx="40" cy="25" r="10" fill="#D0E8DC"/><path d="M34 35 L30 60 L20 80" stroke="#3D6B52" fill="none" stroke-width="3"/><path d="M46 35 L55 60 L80 70" stroke="#3D6B52" fill="none" stroke-width="3"/><rect x="8" y="15" width="5" height="70" rx="2" fill="#B8C8B4"/><text x="48" y="90" text-anchor="middle" font-size="9" fill="#5A9478">Étirement psoas</text>'},
+    {name:'Abduction latérale mur',dur:50,desc:'Dos au mur. Levez une jambe tendue sur le côté, pied en flexion. Montez à 30–45°, maintenez 3s. 12 reps par jambe. Le buste reste droit.',focus:'Adducteurs + fessiers',mat:false,svg:'<circle cx="50" cy="22" r="10" fill="#D0E8DC"/><rect x="45" y="32" width="10" height="28" rx="4" fill="#3D6B52"/><path d="M45 55 L42 80" stroke="#3D6B52" fill="none" stroke-width="2.5"/><path d="M55 55 L75 45" stroke="#3D6B52" stroke-width="3" fill="none"/><rect x="8" y="15" width="5" height="75" rx="2" fill="#B8C8B4"/><text x="50" y="93" text-anchor="middle" font-size="9" fill="#5A9478">Jambe ↗</text>'},
+    {name:'Cercles de cheville au mur',dur:40,desc:'Dos au mur, soulevez un pied. Faites des grands cercles de cheville, 10x dans chaque sens. Changez de pied. Excellent pour la proprioception et la circulation.',focus:'Chevilles + équilibre',mat:false,svg:'<circle cx="50" cy="22" r="10" fill="#D0E8DC"/><rect x="45" y="32" width="10" height="28" rx="4" fill="#3D6B52"/><path d="M45 55 L42 80" stroke="#3D6B52" fill="none" stroke-width="2.5"/><path d="M55 55 L58 80" stroke="#3D6B52" fill="none" stroke-width="2.5"/><circle cx="58" cy="86" r="6" stroke="#A84E0A" fill="none" stroke-width="2"/><rect x="8" y="15" width="5" height="75" rx="2" fill="#B8C8B4"/><text x="50" y="96" text-anchor="middle" font-size="9" fill="#5A9478">Cercles ↺</text>'},
+  ],
+  bras: [
+    {name:'Pompe au mur inclinée',dur:60,desc:'Face au mur, mains à hauteur de poitrine, légèrement plus larges que les épaules. Pliez les coudes à 90° en inspirant, poussez en expirant. 15 répétitions. Gainez le ventre.',focus:'Pectoraux + triceps',mat:false,svg:'<circle cx="50" cy="28" r="10" fill="#D0E8DC"/><path d="M44 38 L38 55 M56 38 L62 55" stroke="#3D6B52" fill="none" stroke-width="3"/><path d="M38 55 L30 52 M62 55 L70 52" stroke="#3D6B52" fill="none" stroke-width="2.5"/><rect x="72" y="42" width="18" height="5" rx="2" fill="#B8C8B4"/><text x="50" y="80" text-anchor="middle" font-size="9" fill="#5A9478">Coudes →Mur</text>'},
+    {name:'Triceps dips au mur',dur:50,desc:'Dos au mur, fléchissez les coudes derrière vous en posant les paumes sur le mur à hauteur des hanches, doigts pointés vers le bas. Poussez et tendez. 12 reps.',focus:'Triceps',mat:false,svg:'<circle cx="50" cy="22" r="10" fill="#D0E8DC"/><rect x="45" y="32" width="10" height="28" rx="4" fill="#3D6B52"/><path d="M45 42 L25 55 L25 45" stroke="#3D6B52" fill="none" stroke-width="2.5"/><path d="M55 42 L75 55 L75 45" stroke="#3D6B52" fill="none" stroke-width="2.5"/><rect x="8" y="15" width="5" height="75" rx="2" fill="#B8C8B4"/><text x="50" y="75" text-anchor="middle" font-size="9" fill="#5A9478">Triceps ↑</text>'},
+    {name:'W-Y au mur – épaules et omoplate',dur:60,desc:'Dos au mur. Formez un W avec les bras (coudes pliés, dos des mains au mur). Montez en Y lentement. Maintenez 3s. 10 reps. Le dos reste plaqué.',focus:'Épaules + rhomboïdes',mat:false,svg:'<circle cx="50" cy="22" r="10" fill="#D0E8DC"/><rect x="45" y="32" width="10" height="20" rx="4" fill="#3D6B52"/><path d="M45 40 L28 52 L20 38" stroke="#3D6B52" fill="none" stroke-width="2.5"/><path d="M55 40 L72 52 L80 38" stroke="#3D6B52" fill="none" stroke-width="2.5"/><rect x="8" y="15" width="5" height="75" rx="2" fill="#B8C8B4"/><text x="50" y="75" text-anchor="middle" font-size="9" fill="#5A9478">W → Y</text>'},
+    {name:'Curl biceps avec brique',dur:50,desc:'Debout au mur, dos droit. Tenez la brique dans chaque main (ou bouteille 500ml). Fléchissez les avant-bras vers les épaules lentement. 15 reps.',focus:'Biceps',mat:true,svg:'<circle cx="50" cy="22" r="10" fill="#D0E8DC"/><rect x="45" y="32" width="10" height="28" rx="4" fill="#3D6B52"/><path d="M45 48 L25 65 L22 75" stroke="#3D6B52" fill="none" stroke-width="2.5"/><path d="M55 48 L75 65 L78 75" stroke="#3D6B52" fill="none" stroke-width="2.5"/><rect x="18" y="72" width="8" height="12" rx="2" fill="#C9A050"/><rect x="74" y="72" width="8" height="12" rx="2" fill="#C9A050"/><rect x="8" y="15" width="5" height="75" rx="2" fill="#B8C8B4"/><text x="50" y="93" text-anchor="middle" font-size="9" fill="#5A9478">Brique 🧱</text>'},
+    {name:'Extension latérale au rouleau',dur:60,desc:'Allongée sur le rouleau en longitudinal (colonne sur le rouleau). Bras en croix, laissez la gravité ouvrir les épaules. 30s de relâchement, puis bras vers le haut et redescente lente. 5 reps.',focus:'Épaules + pectoraux + dos',mat:true,svg:'<ellipse cx="50" cy="68" rx="38" ry="7" fill="#D0E8DC"/><rect x="46" y="30" width="8" height="40" rx="4" fill="#3D6B52"/><circle cx="50" cy="22" r="10" fill="#D0E8DC"/><path d="M12 55 L46 50 M54 50 L88 55" stroke="#3D6B52" fill="none" stroke-width="2.5"/><ellipse cx="50" cy="55" rx="4" ry="28" fill="#C9A050" opacity="0.5"/><text x="50" y="85" text-anchor="middle" font-size="9" fill="#5A9478">Rouleau 🪵</text>'},
+  ],
+  global: [
+    {name:'Planche au mur inclinée',dur:60,desc:'Mains au mur, corps en ligne oblique, tête dans l\'axe. Gainez tout le corps. Maintenez 20–30s. 3–4 séries. Respirez normalement. Corps rigide comme une planche.',focus:'Gainage global',mat:false,svg:'<circle cx="30" cy="30" r="10" fill="#D0E8DC"/><path d="M40 38 L75 58" stroke="#3D6B52" fill="none" stroke-width="8" stroke-linecap="round"/><rect x="78" y="48" width="8" height="40" rx="2" fill="#B8C8B4"/><text x="50" y="85" text-anchor="middle" font-size="9" fill="#5A9478">Corps aligné</text>'},
+    {name:'Rotation du tronc au mur',dur:50,desc:'Dos au mur, pieds à 20cm. Bras croisés sur la poitrine. Tournez le buste à droite, maintenez 3s, revenez. Idem à gauche. 10 reps par côté. Le bassin reste fixe.',focus:'Obliques + mobilité',mat:false,svg:'<circle cx="50" cy="22" r="10" fill="#D0E8DC"/><path d="M44 32 Q38 48 44 60" stroke="#3D6B52" fill="none" stroke-width="3"/><path d="M56 32 Q62 48 56 60" stroke="#3D6B52" fill="none" stroke-width="3"/><path d="M35 45 L65 40" stroke="#A84E0A" fill="none" stroke-width="2" stroke-dasharray="4,2"/><rect x="8" y="15" width="5" height="75" rx="2" fill="#B8C8B4"/><text x="50" y="80" text-anchor="middle" font-size="9" fill="#5A9478">Rotation ↺</text>'},
+    {name:'Marche sur place lente au mur',dur:60,desc:'Dos au mur. Montez les genoux en alternance lentement, à hauteur du bassin. Gardez le buste droit. 30 montées. Synchez avec la respiration. Pas de précipitation.',focus:'Global + cardio doux',mat:false,svg:'<circle cx="50" cy="22" r="10" fill="#D0E8DC"/><rect x="45" y="32" width="10" height="22" rx="4" fill="#3D6B52"/><path d="M45 48 L40 80" stroke="#3D6B52" fill="none" stroke-width="2.5"/><path d="M55 48 L55 62 L65 50" stroke="#3D6B52" stroke-width="2.5" fill="none"/><rect x="8" y="15" width="5" height="75" rx="2" fill="#B8C8B4"/><text x="50" y="93" text-anchor="middle" font-size="9" fill="#5A9478">Marche lente</text>'},
+    {name:'Gainage latéral mur',dur:50,desc:'Côté contre le mur, bras tendu appuyé. Levez la hanche pour aligner le corps. Maintenez 20s par côté. 3 séries. La tête dans l\'axe de la colonne.',focus:'Obliques + gainage',mat:false,svg:'<circle cx="25" cy="30" r="10" fill="#D0E8DC"/><path d="M35 35 L80 55" stroke="#3D6B52" fill="none" stroke-width="7" stroke-linecap="round"/><rect x="78" y="42" width="6" height="28" rx="2" fill="#B8C8B4"/><text x="50" y="80" text-anchor="middle" font-size="9" fill="#5A9478">Côté ↔</text>'},
+    {name:'Roulé-boulé au rouleau – détente globale',dur:60,desc:'Assise, placez le rouleau sous la nuque. Déroulez la colonne dessus centimètre par centimètre, bras le long du corps. Restez 30s à chaque zone. Remontez lentement.',focus:'Détente colonne',mat:true,svg:'<ellipse cx="50" cy="72" rx="38" ry="7" fill="#D0E8DC"/><circle cx="50" cy="22" r="10" fill="#D0E8DC"/><rect x="46" y="32" width="8" height="38" rx="4" fill="#3D6B52"/><ellipse cx="50" cy="38" rx="4" ry="12" fill="#C9A050" opacity="0.6"/><text x="50" y="90" text-anchor="middle" font-size="9" fill="#5A9478">Rouleau 🪵</text>'},
+  ]
+};
+
+const meditationSeq = [
+  {name:'Bébé heureux (Ananda Balasana)',dur:60,desc:'Allongée sur le dos, pliez les genoux vers la poitrine. Attrapez l\'extérieur de vos pieds ou vos chevilles. Écartez les genoux de part et d\'autre du buste. Berçez-vous doucement d\'un côté à l\'autre. Respirez profondément.',svg:'<ellipse cx="50" cy="72" rx="38" ry="8" fill="#DDD5F0"/><circle cx="50" cy="35" r="12" fill="#DDD5F0"/><path d="M15 65 Q30 55 50 50 Q70 55 85 65" stroke="#52398A" fill="none" stroke-width="3"/><path d="M30 45 L20 25 Q18 18 25 22" stroke="#52398A" fill="none" stroke-width="2.5"/><path d="M70 45 L80 25 Q82 18 75 22" stroke="#52398A" fill="none" stroke-width="2.5"/><text x="50" y="92" text-anchor="middle" font-size="9" fill="#52398A">Bébé heureux 🌟</text>'},
+  {name:'Papillon allongé (Supta Baddha Konasana)',dur:70,desc:'Allongée, plantez les pieds l\'un contre l\'autre, genoux tombant de chaque côté. Les bras le long du corps, paumes vers le haut. Fermez les yeux. Laissez les hanches s\'ouvrir naturellement. Respirez par le ventre.',svg:'<ellipse cx="50" cy="72" rx="38" ry="8" fill="#DDD5F0"/><circle cx="50" cy="30" r="12" fill="#DDD5F0"/><path d="M12 65 Q30 55 50 50 Q70 55 88 65" stroke="#52398A" fill="none" stroke-width="3"/><path d="M50 62 L32 75 L45 65" stroke="#52398A" fill="none" stroke-width="2.5"/><path d="M50 62 L68 75 L55 65" stroke="#52398A" fill="none" stroke-width="2.5"/><text x="50" y="92" text-anchor="middle" font-size="9" fill="#52398A">Papillon 🦋</text>'},
+  {name:'Torsion douce au sol (Supta Matsyendrasana)',dur:60,desc:'Allongée sur le dos. Ramenez le genou droit vers la poitrine, laissez-le tomber à gauche. Bras en croix, tête vers la droite. Respirez 4 fois lentement. Changez de côté.',svg:'<ellipse cx="50" cy="72" rx="38" ry="8" fill="#DDD5F0"/><circle cx="32" cy="30" r="10" fill="#DDD5F0"/><path d="M12 65 Q35 58 55 55 Q72 55 88 65" stroke="#52398A" fill="none" stroke-width="3"/><path d="M55 55 L65 70 L50 65" stroke="#52398A" fill="none" stroke-width="2.5"/><path d="M12 55 L35 52 M72 55 L88 50" stroke="#52398A" fill="none" stroke-width="2"/><text x="50" y="92" text-anchor="middle" font-size="9" fill="#52398A">Torsion douce 🌀</text>'},
+  {name:'Pleine conscience – scan corporel',dur:90,desc:'Fermez les yeux. Portez votre attention sur vos pieds — sentez le contact avec le sol. Remontez lentement : mollets, genoux, cuisses, bassin, ventre, poitrine, épaules, bras, mains, cou, visage. Accueillez chaque sensation sans jugement. Respirez.',svg:'<circle cx="50" cy="25" r="12" fill="#DDD5F0"/><rect x="45" y="37" width="10" height="28" rx="4" fill="#52398A" opacity="0.7"/><path d="M45 50 L30 58 M55 50 L70 58" stroke="#52398A" fill="none" stroke-width="2.5"/><path d="M45 65 L40 85 M55 65 L60 85" stroke="#52398A" fill="none" stroke-width="2.5"/><circle cx="50" cy="25" r="5" fill="none" stroke="#A84E0A" stroke-width="1.5" stroke-dasharray="2,2"/><text x="50" y="96" text-anchor="middle" font-size="9" fill="#52398A">Scan ↓ corps</text>'},
+  {name:'Respiration 4-7-8 – pleine conscience',dur:60,desc:'Inspirez par le nez en comptant 4 temps. Retenez votre souffle 7 temps. Expirez lentement par la bouche en 8 temps (lèvres pincées). Répétez 4 fois. Cette technique active le système nerveux parasympathique.',svg:'<circle cx="50" cy="45" r="28" fill="none" stroke="#DDD5F0" stroke-width="4"/><circle cx="50" cy="45" r="20" fill="none" stroke="#52398A" stroke-width="2" stroke-dasharray="6,3"/><text x="50" y="42" text-anchor="middle" font-size="11" fill="#52398A" font-weight="600">4</text><text x="50" y="54" text-anchor="middle" font-size="8" fill="#52398A">inspire</text><text x="50" y="88" text-anchor="middle" font-size="9" fill="#52398A">4 – 7 – 8 🌬️</text>'},
+];
+
+
+
+let sportConfig = { focus: 'global', mat: false, style: 'mix' };
+let timerInterval = null;
+let timerSeconds = 0;
+let timerName = '';
+
+function renderSport() {
+  document.getElementById('topbarTitle').innerHTML = 'Sport & <em>Méditation</em>';
+  document.getElementById('topbarDot').style.background = '#2B5FA0';
+  document.getElementById('progressWrap').style.display = 'none';
+  document.getElementById('daysBar').style.display = 'none';
+
+  const content = document.getElementById('content');
+  content.innerHTML = `
+    <div class="sport-hub">
+      <div class="sport-hero">
+        <div class="sport-hero-inner">
+          <h2>Programme 15 min</h2>
+          <p>10 min de Pilates (mur + classique) · 5 min de méditation & relaxation yoga</p>
+          <div class="sport-timer-badge">⏱ 10 min sport · 🧘 5 min méditation · Aucun saut · Abdos hypopressifs</div>
+        </div>
+      </div>
+
+      <div class="config-card">
+        <div class="config-title">🎯 Zone de travail (sport 10 min)</div>
+        <div class="focus-grid" id="focusGrid">
+          ${focusZones.map(z => `
+            <button class="focus-btn${sportConfig.focus===z?' selected':''}" onclick="setFocus('${z}')">
+              <span class="fb-ico">${focusIcons[z]}</span>
+              <span>${focusLabels[z]}</span>
+            </button>
+          `).join('')}
+        </div>
+      </div>
+
+      <div class="config-card">
+        <div class="config-title">🏋️ Style Pilates</div>
+        <div class="mat-row">
+          <button class="mat-btn${sportConfig.style==='mix'?' selected':''}" onclick="setStyle('mix')">🔀 Mix mur + classique</button>
+          <button class="mat-btn${sportConfig.style==='wall'?' selected':''}" onclick="setStyle('wall')">🧱 Mur uniquement</button>
+          <button class="mat-btn${sportConfig.style==='classic'?' selected':''}" onclick="setStyle('classic')">🧘 Classique uniquement</button>
+        </div>
+      </div>
+
+      <div class="config-card">
+        <div class="config-title">🧱 Matériel disponible</div>
+        <div class="mat-row">
+          <button class="mat-btn${!sportConfig.mat?' selected':''}" onclick="setMat(false)">✋ Sans matériel</button>
+          <button class="mat-btn${sportConfig.mat?' selected':''}" onclick="setMat(true)">🧱 Avec brique / rouleau</button>
+        </div>
+      </div>
+
+      <button class="gen-btn" onclick="generateProg()">✨ Générer mon programme du jour</button>
+
+      <div class="prog-wrap" id="progWrap">
+        <div class="prog-phase-title">💪 Phase Sport — 10 minutes</div>
+        <div id="sportExercises"></div>
+        <div class="prog-phase-title">🧘 Phase Méditation — 5 minutes</div>
+        <div id="medExercises"></div>
+        <div class="prog-note">
+          <strong>💡 Conseils</strong> — Abdos hypopressifs uniquement : expirez avant chaque effort, rentrez le nombril, remontez le périnée. Jamais de saut ni de crunch. Cuissons douces recommandées si MICI active. En cas de douleur, arrêtez et consultez.
+        </div>
+      </div>
+    </div>
+
+    <div class="global-timer" id="globalTimer">
+      <div class="gt-info">
+        <div class="gt-name" id="gtName">Exercice</div>
+        <div class="gt-time" id="gtTime">0:00</div>
+      </div>
+      <button class="gt-stop" onclick="stopTimer()">■ Stop</button>
+    </div>
+  `;
+}
+
+function setFocus(z) {
+  sportConfig.focus = z;
+  document.querySelectorAll('.focus-btn').forEach(b => b.classList.remove('selected'));
+  event.currentTarget.classList.add('selected');
+}
+
+function setMat(v) {
+  sportConfig.mat = v;
+  // only toggle within the mat-row that has no style buttons
+  const btn = event.currentTarget;
+  const row = btn.closest('.config-card');
+  row.querySelectorAll('.mat-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+}
+
+function setStyle(v) {
+  sportConfig.style = v;
+  const btn = event.currentTarget;
+  const row = btn.closest('.config-card');
+  row.querySelectorAll('.mat-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+}
+
+// ── Pilates classique (au sol + debout sans mur) ──
+const classicPilates = {
+  abdo: [
+    {name:'Le Cent (The Hundred) — version douce',type:'classic',dur:60,desc:'Allongée sur le dos, genoux fléchis, pieds à plat. Levez la tête et les épaules légèrement. Bras tendus le long du corps, pompez les bras de haut en bas (petits battements). Inspirez 5 temps, expirez 5 temps. 10 cycles = 100 battements. Abdos rentrés, pas de tension dans le cou.',focus:'Abdo haut + stabilité',mat:false,svg:'<ellipse cx="50" cy="72" rx="38" ry="7" fill="#D0E8DC"/><path d="M12 72 Q30 62 50 58 Q70 62 88 72" stroke="#3D6B52" fill="none" stroke-width="3"/><circle cx="20" cy="52" r="9" fill="#D0E8DC"/><path d="M29 55 L55 50" stroke="#3D6B52" fill="none" stroke-width="2.5"/><path d="M20 62 L55 68" stroke="#3D6B52" fill="none" stroke-width="2.5"/><text x="50" y="90" text-anchor="middle" font-size="9" fill="#5A9478">Cent battements</text>'},
+    {name:'Roll-up partiel hypopressif',type:'classic',dur:50,desc:'Allongée, genoux fléchis. Expirez entièrement, rentrez le nombril. Décollez la tête puis les épaules (jamais les lombaires). Maintenez 3s. Ré-inspirez en redescendant. 8 reps. Jamais de traction sur la nuque.',focus:'Abdo haut profond',mat:false,svg:'<ellipse cx="50" cy="75" rx="38" ry="7" fill="#D0E8DC"/><path d="M12 75 Q28 68 50 65" stroke="#3D6B52" fill="none" stroke-width="3"/><circle cx="60" cy="48" r="10" fill="#D0E8DC"/><path d="M50 65 Q55 55 65 52" stroke="#3D6B52" fill="none" stroke-width="2.5"/><path d="M50 75 L75 78" stroke="#3D6B52" fill="none" stroke-width="2.5"/><text x="50" y="92" text-anchor="middle" font-size="9" fill="#5A9478">Enroulé partiel</text>'},
+    {name:'Double Leg Stretch — version basse',type:'classic',dur:55,desc:'Allongée, genoux ramenés sur la poitrine. Expirez, rentrez le ventre. Tendez bras et jambes simultanément à 45° (ou plus haut si lombalgie). Revenez en inspirant. 8 reps lentes. Le bas du dos reste au sol.',focus:'Abdo bas + transverse',mat:false,svg:'<ellipse cx="50" cy="75" rx="38" ry="7" fill="#D0E8DC"/><path d="M12 75 Q30 68 50 65 Q70 58 88 50" stroke="#3D6B52" fill="none" stroke-width="3"/><circle cx="15" cy="60" r="9" fill="#D0E8DC"/><path d="M24 58 L75 48" stroke="#3D6B52" fill="none" stroke-width="2.5"/><text x="50" y="92" text-anchor="middle" font-size="9" fill="#5A9478">Jambes étirées</text>'},
+    {name:'Spine Twist assis — rotation abdominale',type:'classic',dur:45,desc:'Assise, jambes tendues devant. Bras en croix. Tournez le buste à droite sur 2 temps en expirant fort (rentrez les abdos). Revenez au centre, idem à gauche. 6 reps par côté. Les hanches restent face avant.',focus:'Obliques + abdo haut',mat:false,svg:'<ellipse cx="50" cy="75" rx="20" ry="8" fill="#D0E8DC"/><path d="M38 75 L30 90 M62 75 L70 90" stroke="#3D6B52" fill="none" stroke-width="2.5"/><circle cx="50" cy="52" r="10" fill="#D0E8DC"/><rect x="46" y="62" width="8" height="14" rx="4" fill="#3D6B52"/><path d="M46 68 L25 62 M54 68 L75 62" stroke="#A84E0A" fill="none" stroke-width="2" stroke-dasharray="3,2"/><text x="50" y="98" text-anchor="middle" font-size="9" fill="#5A9478">Rotation ↺</text>'},
+    {name:'Hypopressif au sol – aspiration diaphragme',type:'classic',dur:60,desc:'Allongée ou assise en tailleur. Expirez tout l'air. Fermez la glotte (comme si vous alliez inspirer sans inspirer). Rentrez fortement le ventre et remontez le périnée. Maintenez 6–8s. Relâchez. 5 cycles. Technique clé pour le périnée et la sangle abdominale profonde.',focus:'Transverse + périnée + abdo bas',mat:false,svg:'<ellipse cx="50" cy="75" rx="38" ry="7" fill="#D0E8DC"/><path d="M12 75 Q30 70 50 68 Q70 70 88 75" stroke="#3D6B52" fill="none" stroke-width="3"/><circle cx="50" cy="50" r="10" fill="#D0E8DC"/><rect x="46" y="60" width="8" height="10" rx="4" fill="#3D6B52"/><path d="M50 68 L50 58" stroke="#A84E0A" stroke-width="2" stroke-dasharray="2,2"/><circle cx="50" cy="72" r="3" fill="none" stroke="#A84E0A" stroke-width="1.5"/><text x="50" y="93" text-anchor="middle" font-size="9" fill="#5A9478">Aspiration ↑</text>'},
+  ],
+  dos: [
+    {name:'Cat-Cow au sol (Quadrupédie)',type:'classic',dur:60,desc:'À quatre pattes, poignets sous épaules, genoux sous hanches. Inspirez et creusez le dos (cow). Expirez et arrondissez la colonne vers le plafond (cat). 10 cycles lents et fluides. La tête suit le mouvement.',focus:'Mobilité dorsale complète',mat:false,svg:'<ellipse cx="50" cy="78" rx="38" ry="7" fill="#D0E8DC"/><circle cx="22" cy="50" r="9" fill="#D0E8DC"/><path d="M31 53 Q50 42 69 53" stroke="#3D6B52" fill="none" stroke-width="3"/><path d="M22 59 L22 78 M69 53 L75 78" stroke="#3D6B52" fill="none" stroke-width="2.5"/><path d="M22 78 L75 78" stroke="#3D6B52" fill="none" stroke-width="2"/><text x="50" y="95" text-anchor="middle" font-size="9" fill="#5A9478">Chat/Vache ↕</text>'},
+    {name:'Swimming Pilates — dos et fessiers',type:'classic',dur:60,desc:'Allongée sur le ventre, bras tendus devant, front posé. Levez bras, épaules et jambes du sol. Alternez bras droit/jambe gauche comme un papillon. Respirez normalement. 20 battements. Rentrez le ventre.',focus:'Dos bas + lombaires + fessiers',mat:false,svg:'<ellipse cx="50" cy="65" rx="38" ry="7" fill="#D0E8DC"/><circle cx="22" cy="48" r="9" fill="#D0E8DC"/><path d="M31 50 Q50 45 88 40" stroke="#3D6B52" fill="none" stroke-width="3"/><path d="M50 52 L12 62" stroke="#3D6B52" fill="none" stroke-width="2.5"/><text x="50" y="82" text-anchor="middle" font-size="9" fill="#5A9478">Natation ↕</text>'},
+    {name:'Spine Stretch Forward',type:'classic',dur:45,desc:'Assise, jambes tendues écartées largeur de hanches. Bras tendus devant. Expirez et déroulez la colonne vers l'avant (comme si vous vouliez toucher vos pieds) en gardant les lombaires en flexion, pas en bascule. 8 reps.',focus:'Étirement colonne + dos',mat:false,svg:'<ellipse cx="50" cy="78" rx="30" ry="7" fill="#D0E8DC"/><circle cx="50" cy="42" r="10" fill="#D0E8DC"/><path d="M44 52 Q38 65 30 72" stroke="#3D6B52" fill="none" stroke-width="3"/><path d="M56 52 Q62 65 70 72" stroke="#3D6B52" fill="none" stroke-width="3"/><path d="M30 72 L70 72" stroke="#3D6B52" fill="none" stroke-width="2"/><path d="M50 60 L50 85" stroke="#A84E0A" fill="none" stroke-width="1.5" stroke-dasharray="3,2"/><text x="50" y="95" text-anchor="middle" font-size="9" fill="#5A9478">Enroulé avant</text>'},
+    {name:'Oiseau-chien au sol (Bird Dog)',type:'classic',dur:60,desc:'À quatre pattes. Tendez bras droit + jambe gauche simultanément, dans le prolongement du corps. Maintenez 5s, revenez sans toucher le sol. 8 reps par côté. Le dos reste plat comme une table.',focus:'Dos + gainage + équilibre',mat:false,svg:'<ellipse cx="50" cy="78" rx="38" ry="7" fill="#D0E8DC"/><circle cx="38" cy="52" r="9" fill="#D0E8DC"/><path d="M47 55 Q55 52 62 52" stroke="#3D6B52" fill="none" stroke-width="3"/><path d="M38 61 L38 78 M62 52 L72 78" stroke="#3D6B52" fill="none" stroke-width="2.5"/><path d="M47 55 L18 48" stroke="#3D6B52" fill="none" stroke-width="2.5"/><path d="M72 52 L88 47" stroke="#3D6B52" fill="none" stroke-width="2.5"/><text x="50" y="95" text-anchor="middle" font-size="9" fill="#5A9478">Bras↔Jambe</text>'},
+    {name:'Roll-Down debout – décompression vertébrale',type:'classic',dur:50,desc:'Debout, pieds parallèles écartés hanches. Menton vers poitrine, déroulez la colonne vertèbre par vertèbre vers le bas. Laissez les bras pendre. Maintenez 5s. Remontez lentement. 5 reps. Ne forcez pas les genoux.',focus:'Colonne + décompression',mat:false,svg:'<circle cx="50" cy="18" r="10" fill="#D0E8DC"/><path d="M44 28 Q40 45 38 60 Q36 72 45 82" stroke="#3D6B52" fill="none" stroke-width="3"/><path d="M56 28 Q60 45 62 60 Q64 72 55 82" stroke="#3D6B52" fill="none" stroke-width="3"/><path d="M45 82 L38 90 M55 82 L62 90" stroke="#3D6B52" fill="none" stroke-width="2"/><text x="50" y="99" text-anchor="middle" font-size="9" fill="#5A9478">Déroulé ↓</text>'},
+  ],
+  jambes: [
+    {name:'Leg Circles au sol (Cercles de jambe)',type:'classic',dur:55,desc:'Allongée sur le dos, une jambe tendue au sol, l'autre levée à 90°. Tracez un cercle avec la jambe levée, 5x dans chaque sens. La hanche reste stable. Changez de jambe. Idéal pour la mobilité de hanche.',focus:'Hanche + stabilité pelvienne',mat:false,svg:'<ellipse cx="50" cy="75" rx="38" ry="7" fill="#D0E8DC"/><path d="M12 75 Q30 68 50 65 Q70 68 88 75" stroke="#3D6B52" fill="none" stroke-width="3"/><circle cx="20" cy="60" r="9" fill="#D0E8DC"/><path d="M50 65 L65 42" stroke="#3D6B52" fill="none" stroke-width="2.5"/><circle cx="65" cy="38" r="5" stroke="#A84E0A" fill="none" stroke-width="2"/><text x="50" y="92" text-anchor="middle" font-size="9" fill="#5A9478">Cercles hanche ↺</text>'},
+    {name:'Side Kick Series — abduction latérale',type:'classic',dur:60,desc:'Allongée sur le côté, corps aligné. Levez la jambe du dessus à hauteur de hanche. Faites des petits kicks vers l'avant (expirez) puis vers l'arrière (inspirez). 10 reps. Changez de côté. Buste stable.',focus:'Fessiers + abducteurs',mat:false,svg:'<ellipse cx="50" cy="72" rx="38" ry="7" fill="#D0E8DC"/><path d="M12 72 Q30 65 50 62 Q70 65 88 72" stroke="#3D6B52" fill="none" stroke-width="7" stroke-linecap="round"/><circle cx="15" cy="55" r="9" fill="#D0E8DC"/><path d="M88 50 L60 62" stroke="#3D6B52" fill="none" stroke-width="2.5"/><path d="M88 50 L60 72" stroke="#3D6B52" fill="none" stroke-width="2" stroke-dasharray="3,2"/><text x="50" y="90" text-anchor="middle" font-size="9" fill="#5A9478">Kick latéral</text>'},
+    {name:'Pont fessier Pilates classique',type:'classic',dur:60,desc:'Allongée, genoux fléchis, pieds à plat. Expirez et enroulez le bassin vertèbre par vertèbre jusqu'en haut. Maintenez 3s au sommet. Redescendez vertèbre par vertèbre. 8 reps. Les fessiers sont contractés en haut.',focus:'Fessiers + dos bas + ischio',mat:false,svg:'<ellipse cx="50" cy="78" rx="38" ry="7" fill="#D0E8DC"/><path d="M12 78 Q28 55 50 48 Q68 45 78 62 Q82 72 75 78" stroke="#3D6B52" fill="none" stroke-width="3"/><path d="M75 78 L88 78" stroke="#3D6B52" fill="none" stroke-width="2"/><text x="50" y="95" text-anchor="middle" font-size="9" fill="#5A9478">Pont enroulé</text>'},
+    {name:'Standing Leg Lift — élévation debout',type:'classic',dur:50,desc:'Debout, une main à la barre (chaise, mur). Levez une jambe tendue devant, sur le côté, derrière en séquence. 5 reps de chaque mouvement par jambe. Buste droit. Engagez le centre.',focus:'Équilibre + fessiers + psoas',mat:false,svg:'<circle cx="50" cy="20" r="10" fill="#D0E8DC"/><rect x="45" y="30" width="10" height="28" rx="4" fill="#3D6B52"/><path d="M45 55 L42 80" stroke="#3D6B52" fill="none" stroke-width="2.5"/><path d="M55 55 L75 42" stroke="#3D6B52" stroke-width="3" fill="none"/><path d="M20" fill="none"/><text x="50" y="95" text-anchor="middle" font-size="9" fill="#5A9478">Élévation debout</text>'},
+    {name:'Clam (Palourde) sur le côté',type:'classic',dur:50,desc:'Allongée sur le côté, genoux fléchis à 90°, pieds superposés. Ouvrez le genou supérieur vers le plafond comme une palourde (les pieds restent joints). Maintenez 2s. 12 reps par côté. Excellent pour les hanches et le plancher pelvien.',focus:'Rotateurs externes + hanches',mat:false,svg:'<ellipse cx="50" cy="72" rx="38" ry="7" fill="#D0E8DC"/><path d="M12 72 Q35 65 55 62" stroke="#3D6B52" fill="none" stroke-width="7" stroke-linecap="round"/><circle cx="15" cy="55" r="9" fill="#D0E8DC"/><path d="M55 62 L62 48" stroke="#3D6B52" stroke-width="3" fill="none"/><path d="M55 62 L68 62" stroke="#3D6B52" stroke-width="2" fill="none" stroke-dasharray="3,2"/><text x="50" y="90" text-anchor="middle" font-size="9" fill="#5A9478">Palourde ↑</text>'},
+  ],
+  bras: [
+    {name:'Bras en Y-T-W debout Pilates',type:'classic',dur:55,desc:'Debout, légèrement penché en avant (45°). Bras le long du corps. Montez en Y (vers l'avant-haut), puis en T (sur les côtés), puis en W (coudes fléchis). Maintenez 2s chaque position. 8 cycles. Contractez les omoplates.',focus:'Épaules + rhomboïdes + trapèze',mat:false,svg:'<circle cx="50" cy="22" r="10" fill="#D0E8DC"/><path d="M44 32 Q42 45 44 55" stroke="#3D6B52" fill="none" stroke-width="3"/><path d="M56 32 Q58 45 56 55" stroke="#3D6B52" fill="none" stroke-width="3"/><path d="M44 40 L18 28 M56 40 L82 28" stroke="#3D6B52" stroke-width="2.5" fill="none"/><text x="50" y="75" text-anchor="middle" font-size="9" fill="#5A9478">Y – T – W</text>'},
+    {name:'Chest Expansion (Ouverture poitrine)',type:'classic',dur:50,desc:'Debout ou à genoux. Bras tendus devant. Tirez les bras derrière en expirant, serrez les omoplates. Maintenez 3s. Relâchez en inspirant. 10 reps. La tête suit avec un léger extension cervicale au retour.',focus:'Pectoraux + dos haut + épaules',mat:false,svg:'<circle cx="50" cy="22" r="10" fill="#D0E8DC"/><rect x="45" y="32" width="10" height="25" rx="4" fill="#3D6B52"/><path d="M45 44 L18 38 M55 44 L82 38" stroke="#3D6B52" stroke-width="3" fill="none"/><path d="M18 38 L18 28 M82 38 L82 28" stroke="#A84E0A" fill="none" stroke-width="1.5" stroke-dasharray="3,2"/><text x="50" y="75" text-anchor="middle" font-size="9" fill="#5A9478">Ouverture ↔</text>'},
+    {name:'Arm Circle Pilates — cercles de bras',type:'classic',dur:45,desc:'Debout ou assis. Tendez les bras sur les côtés. Faites des petits cercles vers l'avant (10x), puis vers l'arrière (10x). Augmentez progressivement l'amplitude. Épaules basses, buste stable.',focus:'Épaules + bras + activation',mat:false,svg:'<circle cx="50" cy="22" r="10" fill="#D0E8DC"/><rect x="45" y="32" width="10" height="20" rx="4" fill="#3D6B52"/><path d="M45 40 L18 40 M55 40 L82 40" stroke="#3D6B52" stroke-width="2.5" fill="none"/><circle cx="18" cy="40" r="7" stroke="#A84E0A" fill="none" stroke-width="1.5"/><circle cx="82" cy="40" r="7" stroke="#A84E0A" fill="none" stroke-width="1.5"/><text x="50" y="72" text-anchor="middle" font-size="9" fill="#5A9478">Cercles ↺</text>'},
+    {name:'Push-up Pilates au sol (modifié)',type:'classic',dur:60,desc:'À genoux (version modifiée) ou en planche complète. Mains sous épaules, corps aligné. Descendez en 3 temps, montez en 1 temps. 10 reps. Gainez le centre. La colonne reste neutre tout au long.',focus:'Pectoraux + triceps + gainage',mat:false,svg:'<ellipse cx="50" cy="78" rx="38" ry="7" fill="#D0E8DC"/><circle cx="22" cy="52" r="9" fill="#D0E8DC"/><path d="M31 55 Q50 52 88 50" stroke="#3D6B52" fill="none" stroke-width="7" stroke-linecap="round"/><path d="M22 61 L22 78" stroke="#3D6B52" fill="none" stroke-width="2.5"/><text x="50" y="95" text-anchor="middle" font-size="9" fill="#5A9478">Push-up 3-1</text>'},
+    {name:'Rowing Pilates avec brique',type:'classic',dur:55,desc:'Assis ou debout, une brique (ou bouteille) dans chaque main. Simulez le mouvement de rame : bras fléchis vers le buste (expirez, serrez les omoplates), tendez vers l'avant (inspirez). 12 reps lentes.',focus:'Biceps + dos + épaules',mat:true,svg:'<circle cx="50" cy="22" r="10" fill="#D0E8DC"/><rect x="45" y="32" width="10" height="20" rx="4" fill="#3D6B52"/><path d="M45 42 L22 50 M55 42 L78 50" stroke="#3D6B52" fill="none" stroke-width="2.5"/><rect x="14" y="47" width="10" height="7" rx="2" fill="#C9A050"/><rect x="76" y="47" width="10" height="7" rx="2" fill="#C9A050"/><text x="50" y="72" text-anchor="middle" font-size="9" fill="#5A9478">Rame 🧱</text>'},
+  ],
+  global: [
+    {name:'Roll Like a Ball (Roulade)',type:'classic',dur:50,desc:'Assis, genoux ramenés sur la poitrine, mains sur les chevilles. Roulez en arrière sur 3–4 vertèbres, remontez en contrôlant. Pas de roulement sur la nuque. 8 reps. Abdos activés pendant tout le mouvement.',focus:'Colonne + abdo + contrôle',mat:false,svg:'<ellipse cx="50" cy="80" rx="35" ry="7" fill="#D0E8DC"/><circle cx="50" cy="50" r="22" stroke="#3D6B52" fill="none" stroke-width="3"/><circle cx="50" cy="42" r="8" fill="#D0E8DC"/><path d="M50 50 Q40 55 38 65 Q40 72 50 72" stroke="#3D6B52" fill="none" stroke-width="2"/><text x="50" y="97" text-anchor="middle" font-size="9" fill="#5A9478">Roulade ↕</text>'},
+    {name:'Planche Pilates classique',type:'classic',dur:60,desc:'Position de pompe, bras tendus. Corps en ligne parfaite. Rentrez le nombril vers la colonne. Maintenez 20–30s en respirant. 3–4 séries. Regardez le sol. Option : en appui sur les coudes.',focus:'Gainage global complet',mat:false,svg:'<ellipse cx="50" cy="75" rx="38" ry="7" fill="#D0E8DC"/><circle cx="18" cy="52" r="9" fill="#D0E8DC"/><path d="M27 55 L88 55" stroke="#3D6B52" fill="none" stroke-width="7" stroke-linecap="round"/><path d="M27 55 L18 68 M88 55 L88 68" stroke="#3D6B52" fill="none" stroke-width="2.5"/><text x="50" y="92" text-anchor="middle" font-size="9" fill="#5A9478">Planche classique</text>'},
+    {name:'Teaser Pilates (version modifiée)',type:'classic',dur:55,desc:'Allongée, jambes à 45°. Tendez les bras vers les pieds en expirant, levez les bras et le buste simultanément (forme de V). Maintenez 3s. Redescendez lentement. Version modifiée : genoux fléchis à 90°. 6 reps.',focus:'Abdo + stabilité + équilibre',mat:false,svg:'<ellipse cx="50" cy="80" rx="38" ry="7" fill="#D0E8DC"/><path d="M12 80 Q30 70 50 55 Q70 70 88 80" stroke="#3D6B52" fill="none" stroke-width="2.5"/><circle cx="50" cy="45" r="10" fill="#D0E8DC"/><path d="M44 55 L25 72 M56 55 L75 72" stroke="#3D6B52" fill="none" stroke-width="2.5"/><text x="50" y="97" text-anchor="middle" font-size="9" fill="#5A9478">Teaser V</text>'},
+    {name:'Mermaid Stretch — étirement latéral',type:'classic',dur:45,desc:'Assise en tailleur ou en Z. Posez une main au sol sur le côté. Levez l'autre bras et penchez-vous latéralement. Sentez l'étirement du flanc. Maintenez 5 respirations. Changez de côté. 3 reps par côté.',focus:'Flancs + colonne + souplesse',mat:false,svg:'<ellipse cx="50" cy="78" rx="35" ry="7" fill="#D0E8DC"/><circle cx="35" cy="52" r="9" fill="#D0E8DC"/><path d="M30 61 L25 78 M44 56 L55 78" stroke="#3D6B52" fill="none" stroke-width="2.5"/><path d="M44 56 Q65 35 75 28" stroke="#3D6B52" fill="none" stroke-width="3"/><path d="M25 78 L55 78" stroke="#3D6B52" fill="none" stroke-width="2"/><text x="50" y="95" text-anchor="middle" font-size="9" fill="#5A9478">Sirène latérale</text>'},
+    {name:'Standing Balance — équilibre en arabesque',type:'classic',dur:50,desc:'Debout, pieds parallèles. Tendez un bras devant et la jambe opposée derrière (T). Maintenez 5s en respirant. 6 reps par côté. Le gainage du centre est essentiel. Regardez un point fixe devant vous.',focus:'Équilibre + global + gainage',mat:false,svg:'<circle cx="50" cy="22" r="10" fill="#D0E8DC"/><rect x="45" y="32" width="10" height="15" rx="4" fill="#3D6B52"/><path d="M45 40 L18 38" stroke="#3D6B52" stroke-width="3" fill="none"/><path d="M55 40 L55 55 L78 62" stroke="#3D6B52" stroke-width="2.5" fill="none"/><path d="M50 47 L42 80" stroke="#3D6B52" fill="none" stroke-width="2.5"/><text x="50" y="95" text-anchor="middle" font-size="9" fill="#5A9478">Arabesque</text>'},
+  ]
+};
+
+function generateProg() {
+  const focus = sportConfig.focus;
+  const style = sportConfig.style || 'mix';
+
+  // Build pool based on style
+  let wallPool = (wallPilates[focus] || wallPilates.global).filter(e => sportConfig.mat || !e.mat);
+  let classPool = (classicPilates[focus] || classicPilates.global).filter(e => sportConfig.mat || !e.mat);
+
+  let pool = [];
+  if (style === 'wall') pool = wallPool;
+  else if (style === 'classic') pool = classPool;
+  else {
+    // Mix: alternate sources, shuffle each
+    const ws = [...wallPool].sort(()=>Math.random()-0.5);
+    const cs = [...classPool].sort(()=>Math.random()-0.5);
+    // interleave
+    const maxLen = Math.max(ws.length, cs.length);
+    for (let i=0; i<maxLen; i++) {
+      if (ws[i]) pool.push(ws[i]);
+      if (cs[i]) pool.push(cs[i]);
+    }
+  }
+
+  const shuffled = pool.sort(()=>Math.random()-0.5);
+  let chosen = [];
+  let total = 0;
+  for (const ex of shuffled) {
+    if (total + ex.dur <= 630) { chosen.push(ex); total += ex.dur; }
+    if (chosen.length >= 5 || total >= 550) break;
+  }
+  // Pad if not enough
+  if (chosen.length < 3) {
+    const fallback = [...wallPilates.global, ...classicPilates.global]
+      .filter(e => !chosen.includes(e) && (sportConfig.mat || !e.mat))
+      .sort(()=>Math.random()-0.5);
+    for (const ex of fallback) {
+      if (total + ex.dur <= 630) { chosen.push(ex); total += ex.dur; }
+      if (chosen.length >= 5) break;
+    }
+  }
+
+  // Sport HTML
+  const sportHTML = chosen.map((ex, i) => `
+    <div class="exercise-card">
+      <div class="ex-header">
+        <svg class="ex-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">${ex.svg}</svg>
+        <div class="ex-info">
+          <div class="ex-name">${i+1}. ${ex.name}</div>
+          <div class="ex-meta">
+            <span class="ex-tag tag-dur">⏱ \${ex.dur}s</span>
+            <span class="ex-tag tag-focus">\${ex.focus}</span>
+            <span class="ex-tag" style="background:#E8F0FC;color:#2B5FA0">\${ex.type==='classic'?'🧘 Classique':'🧱 Mur'}</span>
+            \${ex.mat ? '<span class="ex-tag tag-mat">🧱 Matériel</span>' : ''}
+          </div>
+        </div>
+        <button class="ex-timer-btn" id="tbtn_${i}" onclick="startTimer('${ex.name.replace(/'/g,'\'')}', ${ex.dur}, 'tbtn_${i}')">▶ ${ex.dur}s</button>
+      </div>
+      <div class="ex-body">${ex.desc}</div>
+    </div>
+  `).join('');
+
+  // Meditation HTML
+  const medHTML = meditationSeq.map((m, i) => `
+    <div class="med-card">
+      <div class="med-header">
+        <svg class="ex-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">${m.svg}</svg>
+        <div>
+          <div class="med-name">${m.name}</div>
+          <div class="ex-meta" style="margin-top:.25rem">
+            <span class="ex-tag tag-dur">⏱ ${m.dur}s</span>
+          </div>
+        </div>
+        <button class="ex-timer-btn" id="mbtn_${i}" onclick="startTimer('${m.name.replace(/'/g,'\'')}', ${m.dur}, 'mbtn_${i}')">▶ ${m.dur}s</button>
+      </div>
+      <div class="med-body">${m.desc}</div>
+    </div>
+  `).join('');
+
+  document.getElementById('sportExercises').innerHTML = sportHTML;
+  document.getElementById('medExercises').innerHTML = medHTML;
+  const pw = document.getElementById('progWrap');
+  pw.classList.add('visible');
+  pw.scrollIntoView({ behavior:'smooth', block:'start' });
+}
+
+function startTimer(name, secs, btnId) {
+  stopTimer();
+  timerSeconds = secs;
+  timerName = name;
+  const gt = document.getElementById('globalTimer');
+  const gtName = document.getElementById('gtName');
+  const gtTime = document.getElementById('gtTime');
+  gt.classList.add('show');
+  gtName.textContent = name;
+
+  // Mark button as running
+  const btn = document.getElementById(btnId);
+  if (btn) { btn.classList.add('running'); btn.textContent = '⏳ ' + secs + 's'; }
+
+  timerInterval = setInterval(() => {
+    timerSeconds--;
+    const m = Math.floor(timerSeconds/60);
+    const s = timerSeconds % 60;
+    gtTime.textContent = m + ':' + String(s).padStart(2,'0');
+    if (btn) btn.textContent = '⏳ ' + timerSeconds + 's';
+    if (timerSeconds <= 0) {
+      clearInterval(timerInterval);
+      gt.classList.remove('show');
+      if (btn) { btn.classList.remove('running'); btn.textContent = '✓ Terminé'; }
+    }
+  }, 1000);
+}
+
+function stopTimer() {
+  if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+  document.getElementById('globalTimer')?.classList.remove('show');
+  document.querySelectorAll('.ex-timer-btn.running').forEach(b => {
+    b.classList.remove('running');
+    b.textContent = '▶ Relancer';
+  });
+}
+
+</script>
+</body>
+</html>
