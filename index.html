@@ -1063,7 +1063,7 @@ function render() {
   // Phase band
   let phaseBand = '';
   if (isEvict) {
-    phaseBand = activeDay === 0 ? `
+    phaseBand = activeDay === 0 ? '
       <div class="intro-evict">
         <strong>🌿 Principes clés — Régime FODMAPs adapté SCI &amp; MICI</strong><br>
         <ul>
@@ -1075,7 +1075,7 @@ function render() {
           <li>💊 <strong>Nutriments clés</strong> : oméga-3 (saumon, sardine, maquereau), curcuma (anti-inflammatoire), gingembre (anti-nausée), probiotiques naturels (yaourt de brebis/coco)</li>
         </ul>
         <br>⚠️ Ce menu est indicatif. Il ne remplace pas un suivi médical. En cas de poussée inflammatoire (MICI), consultez votre gastro-entérologue.
-      </div>` : '';
+      </div>' : '';
   } else {
     phaseBand = '<div class="phase-band ' + tabClass + '">';
     phaseBand += '<div class="pb-icon">' + phase.icon + '</div>';
