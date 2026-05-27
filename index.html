@@ -994,10 +994,10 @@ function buildTabs() {
     <button class="phase-tab evict-tab${activeSection==='evict'?' active':''}" onclick="setSection('evict')">
       <span class="pt-icon">🌿</span><span>Éviction</span><span class="pt-name">15 jours</span>
     </button>
-    <button class="phase-tab sport-tab\${activeSection==='sport'?' active':''}" onclick="setSection('sport')">
+    <button class="phase-tab sport-tab${activeSection==='sport'?' active':''}" onclick="setSection('sport')">
       <span class="pt-icon">🧘</span><span>Sport</span><span class="pt-name">15 min</span>
     </button>
-    \${reintrPhases.map(p => `
+    ${reintrPhases.map(p => `
       <button class="phase-tab ${p.tabClass}${activeSection===p.id?' active':''}" onclick="setSection('${p.id}')">
         <span class="pt-icon">${p.icon}</span><span>${p.label}</span><span class="pt-name">${p.tabName}</span>
       </button>
@@ -1457,10 +1457,10 @@ function generateProg() {
         <div class="ex-info">
           <div class="ex-name">${i+1}. ${ex.name}</div>
           <div class="ex-meta">
-            <span class="ex-tag tag-dur">⏱ \${ex.dur}s</span>
-            <span class="ex-tag tag-focus">\${ex.focus}</span>
-            <span class="ex-tag" style="background:#E8F0FC;color:#2B5FA0">\${ex.type==='classic'?'🧘 Classique':'🧱 Mur'}</span>
-            \${ex.mat ? '<span class="ex-tag tag-mat">🧱 Matériel</span>' : ''}
+            <span class="ex-tag tag-dur">⏱ ${ex.dur}s</span>
+            <span class="ex-tag tag-focus">${ex.focus}</span>
+            <span class="ex-tag" style="background:#E8F0FC;color:#2B5FA0">${ex.type==='classic'?'🧘 Classique':'🧱 Mur'}</span>
+            ${ex.mat ? '<span class="ex-tag tag-mat">🧱 Matériel</span>' : ''}
           </div>
         </div>
         <button class="ex-timer-btn" id="tbtn_${i}" onclick="startTimer('${ex.name.replace(/'/g,'\'')}', ${ex.dur}, 'tbtn_${i}')">▶ ${ex.dur}s</button>
