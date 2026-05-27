@@ -990,19 +990,16 @@ function startApp(section) {
 
 function buildTabs() {
   const tabs = document.getElementById('phaseTabs');
-  tabs.innerHTML = `
-    <button class="phase-tab evict-tab${activeSection==='evict'?' active':''}" onclick="setSection('evict')">
-      <span class="pt-icon">🌿</span><span>Éviction</span><span class="pt-name">15 jours</span>
-    </button>
-    <button class="phase-tab sport-tab${activeSection==='sport'?' active':''}" onclick="setSection('sport')">
-      <span class="pt-icon">🧘</span><span>Sport</span><span class="pt-name">15 min</span>
-    </button>
-    ${reintrPhases.map(p => `
-      <button class="phase-tab ${p.tabClass}${activeSection===p.id?' active':''}" onclick="setSection('${p.id}')">
-        <span class="pt-icon">${p.icon}</span><span>${p.label}</span><span class="pt-name">${p.tabName}</span>
-      </button>
-    `).join('')}
-  `;
+  let html = '';
+  html += '<button class="phase-tab evict-tab' + (activeSection==='evict'?' active':'') + '" onclick="setSection(\'evict\')">';
+  html += '<span class="pt-icon">🌿</span><span>Éviction</span><span class="pt-name">15 jours</span></button>';
+  html += '<button class="phase-tab sport-tab' + (activeSection==='sport'?' active':'') + '" onclick="setSection(\'sport\')">';
+  html += '<span class="pt-icon">🧘</span><span>Sport</span><span class="pt-name">15 min</span></button>';
+  reintrPhases.forEach(function(p) {
+    html += '<button class="phase-tab ' + p.tabClass + (activeSection===p.id?' active':'') + '" onclick="setSection(\''+p.id+'\')">'; 
+    html += '<span class="pt-icon">' + p.icon + '</span><span>' + p.label + '</span><span class="pt-name">' + p.tabName + '</span></button>';
+  });
+  tabs.innerHTML = html;
 }
 
 function setSection(sec) {
@@ -1033,7 +1030,7 @@ function render() {
   // Topbar
   document.getElementById('topbarTitle').innerHTML = isEvict
     ? 'Phase 1 — <em>Éviction</em> FODMAPs'
-    : `Phase 2 — Réintroduction <em>${phase.tabName}</em>`;
+    : 'Phase 2 — Réintroduction <em>' + phase.tabName + '</em>';
   const dotColors = {evict:'#3D6B52',w1:'#3B6E5C',w2:'#7A4F28',w3:'#52398A',w4:'#A84E0A',sport:'#2B5FA0'};
   document.getElementById('topbarDot').style.background = dotColors[activeSection];
 
@@ -1044,17 +1041,21 @@ function render() {
   // Progress
   const total = days.length;
   const pct = Math.round(((activeDay+1)/total)*100);
-  document.getElementById('progressLabel').textContent = `Jour ${activeDay+1} sur ${total} — ${pct}%`;
+  document.getElementById('progressLabel').textContent = 'Jour ' + (activeDay+1) + ' sur ' + total + ' — ' + pct + '%';
   const fill = document.getElementById('progressFill');
   fill.style.width = pct + '%';
   fill.className = 'progress-fill ' + (isEvict ? 'pf-evict' : 'pf-sport');
 
   // Days bar
   const bar = document.getElementById('daysBar');
-  bar.innerHTML = days.map((d,i) => {
-    const label = isEvict ? `J${d.num}` : `J${i+1+(['w1','w2','w3','w4'].indexOf(activeSection))*7}`;
-    return `<button class="day-pill${i===activeDay?' active '+tabClass:''}" onclick="setDay(${i})">${label} · ${d.label.split(' ')[0]}</button>`;
-  }).join('');
+  var daysHtml = '';
+  days.forEach(function(d, i) {
+    var phaseIdx = ['w1','w2','w3','w4'].indexOf(activeSection);
+    var label = isEvict ? ('J' + d.num) : ('J' + (i + 1 + phaseIdx * 7));
+    var activeClass = (i === activeDay) ? (' active ' + tabClass) : '';
+    daysHtml += '<button class="day-pill' + activeClass + '" onclick="setDay(' + i + ')">' + label + ' · ' + d.label.split(' ')[0] + '</button>';
+  });
+  bar.innerHTML = daysHtml;
 
   // Content
   const content = document.getElementById('content');
@@ -1076,26 +1077,24 @@ function render() {
         <br>⚠️ Ce menu est indicatif. Il ne remplace pas un suivi médical. En cas de poussée inflammatoire (MICI), consultez votre gastro-entérologue.
       </div>` : '';
   } else {
-    phaseBand = `
-      <div class="phase-band ${tabClass}">
-        <div class="pb-icon">${phase.icon}</div>
-        <div class="pb-body">
-          <div class="pb-sub">${phase.label} · ${phase.subtitle}</div>
-          <h2>${phase.title}</h2>
-          <p>${phase.desc}</p>
-          <div class="food-chips">${phase.foods.map(f=>`<span class="food-chip">${f}</span>`).join('')}</div>
-        </div>
-      </div>`;
+    phaseBand = '<div class="phase-band ' + tabClass + '">';
+    phaseBand += '<div class="pb-icon">' + phase.icon + '</div>';
+    phaseBand += '<div class="pb-body">';
+    phaseBand += '<div class="pb-sub">' + phase.label + ' · ' + phase.subtitle + '</div>';
+    phaseBand += '<h2>' + phase.title + '</h2>';
+    phaseBand += '<p>' + phase.desc + '</p>';
+    phaseBand += '<div class="food-chips">' + phase.foods.map(function(f){return '<span class="food-chip">'+f+'</span>';}).join('') + '</div>';
+    phaseBand += '</div></div>';
   }
 
   // Alert / day type
   let alertHtml = '';
   if (isEvict) {
-    alertHtml = `<div class="alert-box base"><strong>🌿 Jour ${day.num}</strong> — Régime de base strict. Aliments pauvres en FODMAPs, sans gluten, adaptés SCI &amp; MICI. <span style="opacity:0.75;font-size:.78em">Cuissons douces recommandées — vapeur, four, poché.</span></div>`;
+    alertHtml = '<div class="alert-box base"><strong>🌿 Jour ' + day.num + '</strong> — Régime de base strict. Aliments pauvres en FODMAPs, sans gluten, adaptés SCI &amp; MICI. <span style="opacity:0.75;font-size:.78em">Cuissons douces recommandées — vapeur, four, poché.</span></div>';
   } else {
     const typeMap = {test:'test',pause:'pause',observe:'observe'};
     const typeLabel = {test:'⚠️ INSTRUCTION TEST',pause:'💤 PAUSE',observe:'👁 OBSERVATION'};
-    alertHtml = `<div class="alert-box ${typeMap[day.type]}"><strong>${typeLabel[day.type]}</strong> — ${day.alert}</div>`;
+    alertHtml = '<div class="alert-box ' + typeMap[day.type] + '"><strong>' + typeLabel[day.type] + '</strong> — ' + day.alert + '</div>';
   }
 
   // Badge
@@ -1103,55 +1102,55 @@ function render() {
   if (!isEvict) {
     const bMap = {test:'badge-test',pause:'badge-pause',observe:'badge-observe'};
     const bLabel = {test:'🧪 Jour test',pause:'🌿 Pause',observe:'👁 Observation'};
-    badgeHtml = `<span class="badge ${bMap[day.type]}">${bLabel[day.type]}</span>`;
+    badgeHtml = '<span class="badge ' + bMap[day.type] + '">' + bLabel[day.type] + '</span>';
   } else {
     badgeHtml = `<span class="badge badge-base">🌿 Régime de base</span>`;
   }
 
   // Meals
-  const mealsHtml = day.meals.map(m => `
-    <div class="meal-row">
-      <div class="meal-side"><span class="ico">${m.ico}</span><span class="lbl">${m.lbl}</span></div>
-      <div class="meal-body">
-        <div class="meal-name">${m.name}</div>
-        <ul class="meal-items">${m.items.map(it=>`<li>${it}</li>`).join('')}</ul>
-      </div>
-    </div>
-  `).join('');
+  var mealsHtml = '';
+  day.meals.forEach(function(m) {
+    mealsHtml += '<div class="meal-row">';
+    mealsHtml += '<div class="meal-side"><span class="ico">' + m.ico + '</span><span class="lbl">' + m.lbl + '</span></div>';
+    mealsHtml += '<div class="meal-body"><div class="meal-name">' + m.name + '</div>';
+    mealsHtml += '<ul class="meal-items">';
+    m.items.forEach(function(it){ mealsHtml += '<li>' + it + '</li>'; });
+    mealsHtml += '</ul></div></div>';
+  });
 
   // Tip
-  const tipHtml = day.tip ? `<div class="tip-box"><strong>💡 Astuce</strong> — ${day.tip}</div>` : '';
+  var tipHtml = day.tip ? '<div class="tip-box"><strong>💡 Astuce</strong> — ' + day.tip + '</div>' : '';
 
   // Tolerance box (test days only)
   const key = activeSection + '_d' + activeDay;
   const saved = tolData[key] || {};
   let tolHtml = '';
   if (!isEvict && day.type === 'test') {
-    tolHtml = `
+    tolHtml = '
       <div class="tol-box">
-        <div class="tol-head">📝 Suivi de tolérance — ${day.testFood}</div>
+        <div class="tol-head">📝 Suivi de tolérance — ' + day.testFood + '</div>
         <div class="tol-body">
           <div class="tol-q">Réaction globale dans les 24h ?</div>
-          <div class="tol-opts" id="tol_react_${key}">
-            <button class="tol-btn${saved.reaction==='ok'?' sel-ok':''}" onclick="tolSelect('${key}','reaction','ok',this)">✅ Aucun symptôme</button>
-            <button class="tol-btn${saved.reaction==='warn'?' sel-warn':''}" onclick="tolSelect('${key}','reaction','warn',this)">⚠️ Léger / mitigé</button>
-            <button class="tol-btn${saved.reaction==='ko'?' sel-ko':''}" onclick="tolSelect('${key}','reaction','ko',this)">❌ Réaction marquée</button>
+          <div class="tol-opts" id="tol_react_' + key + '">
+            <button class="tol-btn${saved.reaction===\'ok\'?\' sel-ok\':\'\'}" onclick="tolSelect(\'' + key + '\',\'reaction\',\'ok\',this)">✅ Aucun symptôme</button>
+            <button class="tol-btn${saved.reaction===\'warn\'?\' sel-warn\':\'\'}" onclick="tolSelect(\'' + key + '\',\'reaction\',\'warn\',this)">⚠️ Léger / mitigé</button>
+            <button class="tol-btn${saved.reaction===\'ko\'?\' sel-ko\':\'\'}" onclick="tolSelect(\'' + key + '\',\'reaction\',\'ko\',this)">❌ Réaction marquée</button>
           </div>
           <div class="tol-q">Symptômes notés :</div>
           <div class="tol-opts">
-            <button class="tol-btn" onclick="this.classList.toggle('sel-warn')">💨 Ballonnements</button>
-            <button class="tol-btn" onclick="this.classList.toggle('sel-warn')">😣 Douleurs</button>
-            <button class="tol-btn" onclick="this.classList.toggle('sel-warn')">💨 Gaz excessifs</button>
-            <button class="tol-btn" onclick="this.classList.toggle('sel-warn')">🚽 Transit modifié</button>
-            <button class="tol-btn" onclick="this.classList.toggle('sel-warn')">🤢 Nausée</button>
+            <button class="tol-btn" onclick="this.classList.toggle(\'sel-warn\')">💨 Ballonnements</button>
+            <button class="tol-btn" onclick="this.classList.toggle(\'sel-warn\')">😣 Douleurs</button>
+            <button class="tol-btn" onclick="this.classList.toggle(\'sel-warn\')">💨 Gaz excessifs</button>
+            <button class="tol-btn" onclick="this.classList.toggle(\'sel-warn\')">🚽 Transit modifié</button>
+            <button class="tol-btn" onclick="this.classList.toggle(\'sel-warn\')">🤢 Nausée</button>
           </div>
-          <textarea class="note-area" id="note_${key}" placeholder="Notes libres (délai, intensité, durée…)">${saved.note||''}</textarea>
+          <textarea class="note-area" id="note_' + key + '" placeholder="Notes libres (délai, intensité, durée…)">${saved.note||\'\'}</textarea>
           <div class="save-row">
-            <button class="save-btn" onclick="saveNote('${key}')">Enregistrer</button>
-            <span class="saved-flash" id="flash_${key}">✓ Sauvegardé</span>
+            <button class="save-btn" onclick="saveNote(\'' + key + '\')">Enregistrer</button>
+            <span class="saved-flash" id="flash_' + key + '">✓ Sauvegardé</span>
           </div>
         </div>
-      </div>`;
+      </div>';
   }
 
   // Bilan (last day of each reintr week)
@@ -1176,26 +1175,16 @@ function render() {
     bilanHtml = `
       <div class="bilan-wrap">
         <div class="bilan-title">📊 Tableau de tolérance global</div>
-        ${allTests.map(t=>`
-          <div class="bilan-row">
-            <span class="bilan-food">${t.food}</span>
-            ${tag(t.reaction)}
-          </div>`).join('')}
+        ' + allTests.map(function(t){ return '<div class="bilan-row"><span class="bilan-food">' + t.food + '</span>' + tag(t.reaction) + '</div>'; }).join('') + '
       </div>`;
   }
 
-  content.innerHTML = `
-    ${phaseBand}
-    <div class="day-row">
-      <div class="day-title">${isEvict ? `Jour ${day.num} · ${day.label}` : day.label}</div>
-      ${badgeHtml}
-    </div>
-    ${alertHtml}
-    <div class="meals-grid">${mealsHtml}</div>
-    ${tipHtml}
-    ${tolHtml}
-    ${bilanHtml}
-  `;
+  var dayTitle = isEvict ? ('Jour ' + day.num + ' · ' + day.label) : day.label;
+  content.innerHTML = phaseBand
+    + '<div class="day-row"><div class="day-title">' + dayTitle + '</div>' + badgeHtml + '</div>'
+    + alertHtml
+    + '<div class="meals-grid">' + mealsHtml + '</div>'
+    + tipHtml + tolHtml + bilanHtml;
 }
 
 function tolSelect(key, field, val, btn) {
@@ -1283,67 +1272,57 @@ function renderSport() {
   document.getElementById('progressWrap').style.display = 'none';
   document.getElementById('daysBar').style.display = 'none';
 
-  const content = document.getElementById('content');
-  content.innerHTML = `
-    <div class="sport-hub">
-      <div class="sport-hero">
-        <div class="sport-hero-inner">
-          <h2>Programme 15 min</h2>
-          <p>10 min de Pilates (mur + classique) · 5 min de méditation & relaxation yoga</p>
-          <div class="sport-timer-badge">⏱ 10 min sport · 🧘 5 min méditation · Aucun saut · Abdos hypopressifs</div>
-        </div>
-      </div>
+  var focusGrid = '';
+  focusZones.forEach(function(z) {
+    focusGrid += '<button class="focus-btn' + (sportConfig.focus===z?' selected':'') + '" onclick="setFocus(\'' + z + '\')">';
+    focusGrid += '<span class="fb-ico">' + focusIcons[z] + '</span><span>' + focusLabels[z] + '</span></button>';
+  });
 
-      <div class="config-card">
-        <div class="config-title">🎯 Zone de travail (sport 10 min)</div>
-        <div class="focus-grid" id="focusGrid">
-          ${focusZones.map(z => `
-            <button class="focus-btn${sportConfig.focus===z?' selected':''}" onclick="setFocus('${z}')">
-              <span class="fb-ico">${focusIcons[z]}</span>
-              <span>${focusLabels[z]}</span>
-            </button>
-          `).join('')}
-        </div>
-      </div>
+  var html = '';
+  html += '<div class="sport-hub">';
+  html += '<div class="sport-hero"><div class="sport-hero-inner">';
+  html += '<h2>Programme 15 min</h2>';
+  html += '<p>10 min de Pilates (mur + classique) · 5 min de méditation & relaxation yoga</p>';
+  html += '<div class="sport-timer-badge">⏱ 10 min sport · 🧘 5 min méditation · Aucun saut · Abdos hypopressifs</div>';
+  html += '</div></div>';
 
-      <div class="config-card">
-        <div class="config-title">🏋️ Style Pilates</div>
-        <div class="mat-row">
-          <button class="mat-btn${sportConfig.style==='mix'?' selected':''}" onclick="setStyle('mix')">🔀 Mix mur + classique</button>
-          <button class="mat-btn${sportConfig.style==='wall'?' selected':''}" onclick="setStyle('wall')">🧱 Mur uniquement</button>
-          <button class="mat-btn${sportConfig.style==='classic'?' selected':''}" onclick="setStyle('classic')">🧘 Classique uniquement</button>
-        </div>
-      </div>
+  html += '<div class="config-card">';
+  html += '<div class="config-title">🎯 Zone de travail (sport 10 min)</div>';
+  html += '<div class="focus-grid" id="focusGrid">' + focusGrid + '</div>';
+  html += '</div>';
 
-      <div class="config-card">
-        <div class="config-title">🧱 Matériel disponible</div>
-        <div class="mat-row">
-          <button class="mat-btn${!sportConfig.mat?' selected':''}" onclick="setMat(false)">✋ Sans matériel</button>
-          <button class="mat-btn${sportConfig.mat?' selected':''}" onclick="setMat(true)">🧱 Avec brique / rouleau</button>
-        </div>
-      </div>
+  html += '<div class="config-card">';
+  html += '<div class="config-title">🏋️ Style Pilates</div>';
+  html += '<div class="mat-row">';
+  html += '<button class="mat-btn' + (sportConfig.style==='mix'?' selected':'') + '" onclick="setStyle(\'mix\')">🔀 Mix mur + classique</button>';
+  html += '<button class="mat-btn' + (sportConfig.style==='wall'?' selected':'') + '" onclick="setStyle(\'wall\')">🧱 Mur uniquement</button>';
+  html += '<button class="mat-btn' + (sportConfig.style==='classic'?' selected':'') + '" onclick="setStyle(\'classic\')">🧘 Classique uniquement</button>';
+  html += '</div></div>';
 
-      <button class="gen-btn" onclick="generateProg()">✨ Générer mon programme du jour</button>
+  html += '<div class="config-card">';
+  html += '<div class="config-title">🧱 Matériel disponible</div>';
+  html += '<div class="mat-row">';
+  html += '<button class="mat-btn' + (!sportConfig.mat?' selected':'') + '" onclick="setMat(false)">✋ Sans matériel</button>';
+  html += '<button class="mat-btn' + (sportConfig.mat?' selected':'') + '" onclick="setMat(true)">🧱 Avec brique / rouleau</button>';
+  html += '</div></div>';
 
-      <div class="prog-wrap" id="progWrap">
-        <div class="prog-phase-title">💪 Phase Sport — 10 minutes</div>
-        <div id="sportExercises"></div>
-        <div class="prog-phase-title">🧘 Phase Méditation — 5 minutes</div>
-        <div id="medExercises"></div>
-        <div class="prog-note">
-          <strong>💡 Conseils</strong> — Abdos hypopressifs uniquement : expirez avant chaque effort, rentrez le nombril, remontez le périnée. Jamais de saut ni de crunch. Cuissons douces recommandées si MICI active. En cas de douleur, arrêtez et consultez.
-        </div>
-      </div>
-    </div>
+  html += '<button class="gen-btn" onclick="generateProg()">✨ Générer mon programme du jour</button>';
 
-    <div class="global-timer" id="globalTimer">
-      <div class="gt-info">
-        <div class="gt-name" id="gtName">Exercice</div>
-        <div class="gt-time" id="gtTime">0:00</div>
-      </div>
-      <button class="gt-stop" onclick="stopTimer()">■ Stop</button>
-    </div>
-  `;
+  html += '<div class="prog-wrap" id="progWrap">';
+  html += '<div class="prog-phase-title">💪 Phase Sport — 10 minutes</div>';
+  html += '<div id="sportExercises"></div>';
+  html += '<div class="prog-phase-title">🧘 Phase Méditation — 5 minutes</div>';
+  html += '<div id="medExercises"></div>';
+  html += '<div class="prog-note"><strong>💡 Conseils</strong> — Abdos hypopressifs uniquement : expirez avant chaque effort, rentrez le nombril, remontez le périnée. Jamais de saut ni de crunch. En cas de douleur, arrêtez et consultez.</div>';
+  html += '</div>';
+
+  html += '<div class="global-timer" id="globalTimer">';
+  html += '<div class="gt-info"><div class="gt-name" id="gtName">Exercice</div><div class="gt-time" id="gtTime">0:00</div></div>';
+  html += '<button class="gt-stop" onclick="stopTimer()">■ Stop</button>';
+  html += '</div>';
+  html += '</div>';
+
+  document.getElementById('content').innerHTML = html;
 }
 
 function setFocus(z) {
@@ -1450,41 +1429,40 @@ function generateProg() {
   }
 
   // Sport HTML
-  const sportHTML = chosen.map((ex, i) => `
-    <div class="exercise-card">
-      <div class="ex-header">
-        <svg class="ex-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">${ex.svg}</svg>
-        <div class="ex-info">
-          <div class="ex-name">${i+1}. ${ex.name}</div>
-          <div class="ex-meta">
-            <span class="ex-tag tag-dur">⏱ ${ex.dur}s</span>
-            <span class="ex-tag tag-focus">${ex.focus}</span>
-            <span class="ex-tag" style="background:#E8F0FC;color:#2B5FA0">${ex.type==='classic'?'🧘 Classique':'🧱 Mur'}</span>
-            ${ex.mat ? '<span class="ex-tag tag-mat">🧱 Matériel</span>' : ''}
-          </div>
-        </div>
-        <button class="ex-timer-btn" id="tbtn_${i}" onclick="startTimer('${ex.name.replace(/'/g,'\'')}', ${ex.dur}, 'tbtn_${i}')">▶ ${ex.dur}s</button>
-      </div>
-      <div class="ex-body">${ex.desc}</div>
-    </div>
-  `).join('');
+  var sportHTML = '';
+  chosen.forEach(function(ex, i) {
+    var safeName = ex.name.replace(/'/g, '&apos;');
+    sportHTML += '<div class="exercise-card">';
+    sportHTML += '<div class="ex-header">';
+    sportHTML += '<svg class="ex-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">' + ex.svg + '</svg>';
+    sportHTML += '<div class="ex-info">';
+    sportHTML += '<div class="ex-name">' + (i+1) + '. ' + ex.name + '</div>';
+    sportHTML += '<div class="ex-meta">';
+    sportHTML += '<span class="ex-tag tag-dur">⏱ ' + ex.dur + 's</span>';
+    sportHTML += '<span class="ex-tag tag-focus">' + ex.focus + '</span>';
+    sportHTML += '<span class="ex-tag" style="background:#E8F0FC;color:#2B5FA0">' + (ex.type==='classic'?'🧘 Classique':'🧱 Mur') + '</span>';
+    if (ex.mat) sportHTML += '<span class="ex-tag tag-mat">🧱 Matériel</span>';
+    sportHTML += '</div></div>';
+    sportHTML += '<button class="ex-timer-btn" id="tbtn_' + i + '" onclick="startTimer(\'' + safeName + '\', ' + ex.dur + ', \'tbtn_' + i + '\')">▶ ' + ex.dur + 's</button>';
+    sportHTML += '</div>';
+    sportHTML += '<div class="ex-body">' + ex.desc + '</div>';
+    sportHTML += '</div>';
+  });
 
   // Meditation HTML
-  const medHTML = meditationSeq.map((m, i) => `
-    <div class="med-card">
-      <div class="med-header">
-        <svg class="ex-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">${m.svg}</svg>
-        <div>
-          <div class="med-name">${m.name}</div>
-          <div class="ex-meta" style="margin-top:.25rem">
-            <span class="ex-tag tag-dur">⏱ ${m.dur}s</span>
-          </div>
-        </div>
-        <button class="ex-timer-btn" id="mbtn_${i}" onclick="startTimer('${m.name.replace(/'/g,'\'')}', ${m.dur}, 'mbtn_${i}')">▶ ${m.dur}s</button>
-      </div>
-      <div class="med-body">${m.desc}</div>
-    </div>
-  `).join('');
+  var medHTML = '';
+  meditationSeq.forEach(function(m, i) {
+    var safeName = m.name.replace(/'/g, '&apos;');
+    medHTML += '<div class="med-card">';
+    medHTML += '<div class="med-header">';
+    medHTML += '<svg class="ex-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">' + m.svg + '</svg>';
+    medHTML += '<div><div class="med-name">' + m.name + '</div>';
+    medHTML += '<div class="ex-meta" style="margin-top:.25rem"><span class="ex-tag tag-dur">⏱ ' + m.dur + 's</span></div></div>';
+    medHTML += '<button class="ex-timer-btn" id="mbtn_' + i + '" onclick="startTimer(\'' + safeName + '\', ' + m.dur + ', \'mbtn_' + i + '\')">▶ ' + m.dur + 's</button>';
+    medHTML += '</div>';
+    medHTML += '<div class="med-body">' + m.desc + '</div>';
+    medHTML += '</div>';
+  });
 
   document.getElementById('sportExercises').innerHTML = sportHTML;
   document.getElementById('medExercises').innerHTML = medHTML;
